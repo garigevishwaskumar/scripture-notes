@@ -49,15 +49,24 @@ export function Navbar({
     <header className="h-14 sm:h-16 bg-[#090d16]/95 backdrop-blur border-b border-slate-800/90 px-3 sm:px-6 flex items-center justify-between z-30 sticky top-0">
       {/* Left: Branding & Chapter Jump Button */}
       <div className="flex items-center space-x-2 sm:space-x-4">
-        {/* App Logo */}
-        <div className="flex items-center space-x-2.5">
-          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-slate-950 shadow-md shadow-amber-500/20">
+        {/* App Logo & Quick Library Trigger */}
+        <button
+          onClick={onOpenBookPicker}
+          className="flex items-center space-x-2.5 cursor-pointer group text-left p-1.5 -ml-1.5 rounded-xl hover:bg-slate-800/80 transition"
+          title="Browse All 66 Books & Chapters"
+        >
+          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-slate-950 shadow-md shadow-amber-500/20 group-hover:scale-105 transition flex-shrink-0">
             <BookOpen className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
-          <span className="font-bold text-base sm:text-lg tracking-tight text-slate-100 hidden sm:inline-block">
-            Scripture<span className="text-amber-400">Notes</span>
-          </span>
-        </div>
+          <div className="flex flex-col">
+            <span className="font-bold text-base sm:text-lg tracking-tight text-slate-100 leading-tight">
+              Scripture<span className="text-amber-400">Notes</span>
+            </span>
+            <span className="text-[10px] text-slate-400 -mt-0.5 hidden sm:inline group-hover:text-amber-300 transition font-medium">
+              Browse Books ▾
+            </span>
+          </div>
+        </button>
 
         {/* Chapter Jump Selector */}
         <div className="flex items-center space-x-1">

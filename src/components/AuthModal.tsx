@@ -257,6 +257,18 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
           )}
         </div>
 
+        {/* Privacy & Data Security Notice */}
+        <div className="mt-4 p-3 rounded-xl bg-slate-900/80 border border-slate-800 text-[11px] text-slate-400 space-y-1.5">
+          <div className="flex items-center space-x-1.5 text-amber-400 font-semibold text-xs">
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+            <span>How your data is protected</span>
+          </div>
+          <ul className="space-y-1 text-slate-400 leading-tight list-disc pl-3.5">
+            <li>Your email is strictly stored in your private Supabase database and will never be shared.</li>
+            <li>Your notes are encrypted with Row-Level Security: only you can view your notes.</li>
+          </ul>
+        </div>
+
         {/* Continue as guest */}
         <div className="mt-3 text-center">
           <button
@@ -265,9 +277,9 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
               enableGuestMode();
               onClose();
             }}
-            className="text-xs text-slate-500 hover:text-slate-300 underline"
+            className="text-xs text-slate-400 hover:text-amber-300 font-medium transition cursor-pointer"
           >
-            Continue as Guest (Local storage notes)
+            Don&apos;t want to sign in? <span className="underline text-amber-400">Continue as Guest</span> (100% offline)
           </button>
         </div>
       </div>
