@@ -73,12 +73,9 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
-        <meta name="application-name" content="ScriptureNotes" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <meta name="apple-mobile-web-app-title" content="ScriptureNotes" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <script
+          id="scripture-theme-init"
+          suppressHydrationWarning
           dangerouslySetInnerHTML={{
             __html: `
               try {
@@ -93,7 +90,10 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-full flex flex-col font-sans bg-[var(--background)] text-[var(--foreground)] selection:bg-amber-500/25 selection:text-amber-700 dark:selection:text-amber-200">
+      <body
+        className="min-h-full flex flex-col font-sans bg-[var(--background)] text-[var(--foreground)] selection:bg-amber-500/25 selection:text-amber-700 dark:selection:text-amber-200"
+        suppressHydrationWarning
+      >
         <Providers>{children}</Providers>
       </body>
     </html>
