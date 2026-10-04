@@ -132,18 +132,18 @@ export function NotesDrawer({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-md h-full bg-[#0c101a] border-l border-white/[0.1] shadow-2xl flex flex-col text-slate-100 overflow-hidden ring-1 ring-white/10"
+        className="w-full max-w-md h-full bg-[var(--card)] border-l border-[var(--border)] shadow-2xl flex flex-col text-[var(--foreground)] overflow-hidden ring-1 ring-[var(--border)]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Drawer Header */}
-        <div className="p-4 sm:p-5 border-b border-white/[0.08] flex items-center justify-between bg-card/60">
+        <div className="p-4 sm:p-5 border-b border-[var(--border)] flex items-center justify-between bg-[var(--card)]">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+            <div className="w-10 h-10 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500 dark:text-amber-400">
               <FileText className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-white font-display">My Scripture Journal</h3>
-              <p className="text-xs text-slate-400">
+              <h3 className="text-lg font-bold text-[var(--foreground)] font-display">My Scripture Journal</h3>
+              <p className="text-xs text-[var(--muted-foreground)]">
                 {notes.length} {notes.length === 1 ? 'chapter' : 'chapters'} with reflections
               </p>
             </div>
@@ -152,7 +152,7 @@ export function NotesDrawer({
             {notes.length > 0 && (
               <button
                 onClick={handleExportAllNotes}
-                className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.08] transition cursor-pointer"
+                className="p-2 rounded-xl text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--secondary)] transition cursor-pointer"
                 title="Export all notes as Markdown file"
               >
                 <Download className="w-4 h-4" />
@@ -160,14 +160,14 @@ export function NotesDrawer({
             )}
             <button
               onClick={loadAllNotes}
-              className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.08] transition cursor-pointer"
+              className="p-2 rounded-xl text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--secondary)] transition cursor-pointer"
               title="Refresh notes"
             >
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
             </button>
             <button
               onClick={onClose}
-              className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.08] transition cursor-pointer"
+              className="p-2 rounded-xl text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--secondary)] transition cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -176,15 +176,15 @@ export function NotesDrawer({
 
         {/* Search Input */}
         {notes.length > 0 && (
-          <div className="p-3 bg-black/30 border-b border-white/[0.08]">
+          <div className="p-3 bg-[var(--secondary)] border-b border-[var(--border)]">
             <div className="relative">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+              <Search className="w-4 h-4 text-[var(--muted-foreground)] absolute left-3 top-2.5" />
               <input
                 type="text"
                 placeholder="Search notes or scripture topics..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-4 py-1.5 bg-white/[0.05] border border-white/[0.1] rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500"
+                className="w-full pl-9 pr-4 py-1.5 bg-[var(--card)] border border-[var(--border)] rounded-xl text-xs text-[var(--foreground)] placeholder-[var(--muted-foreground)] focus:outline-none focus:border-amber-500"
               />
             </div>
           </div>
@@ -193,28 +193,28 @@ export function NotesDrawer({
         {/* Notes List */}
         <div className="flex-1 overflow-y-auto p-4 space-y-3">
           {loading ? (
-            <div className="py-16 text-center text-slate-500 text-sm">
+            <div className="py-16 text-center text-[var(--muted-foreground)] text-sm">
               <Sparkles className="w-5 h-5 animate-spin mx-auto text-amber-500 mb-2" />
               Loading your notes index...
             </div>
           ) : notes.length === 0 ? (
             <div className="py-16 text-center space-y-4 px-4">
-              <div className="w-14 h-14 mx-auto rounded-3xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+              <div className="w-14 h-14 mx-auto rounded-3xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500 dark:text-amber-400">
                 <BookOpen className="w-7 h-7" />
               </div>
               <div>
-                <h4 className="text-base font-bold text-white font-display">Your Journal is Ready</h4>
-                <p className="text-xs text-slate-400 leading-relaxed max-w-xs mx-auto mt-1">
+                <h4 className="text-base font-bold text-[var(--foreground)] font-display">Your Journal is Ready</h4>
+                <p className="text-xs text-[var(--muted-foreground)] leading-relaxed max-w-xs mx-auto mt-1">
                   Navigate to any chapter in the Bible and record your thoughts, sermons, and prayers. They will be organized here.
                 </p>
               </div>
-              <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.06] text-xs text-amber-200/80 italic font-scripture">
+              <div className="p-4 rounded-2xl bg-[var(--secondary)] border border-[var(--border)] text-xs text-amber-700 dark:text-amber-300 italic font-nkjv">
                 &ldquo;Thy word is a lamp unto my feet, and a light unto my path.&rdquo;
-                <div className="not-italic text-[11px] text-slate-500 font-sans mt-1">Psalm 119:105</div>
+                <div className="not-italic text-[11px] text-[var(--muted-foreground)] font-sans mt-1">Psalm 119:105</div>
               </div>
             </div>
           ) : filteredNotes.length === 0 ? (
-            <div className="py-12 text-center text-slate-500 text-xs">
+            <div className="py-12 text-center text-[var(--muted-foreground)] text-xs">
               No notes found matching &quot;{searchQuery}&quot;
             </div>
           ) : (
@@ -230,17 +230,17 @@ export function NotesDrawer({
                     onSelectChapter(item.book_id, item.chapter_number);
                     onClose();
                   }}
-                  className="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.08] hover:border-amber-500/50 hover:bg-white/[0.06] cursor-pointer transition group shadow-sm"
+                  className="p-4 rounded-2xl bg-[var(--card)] border border-[var(--border)] hover:border-amber-500/50 hover:bg-[var(--secondary)] cursor-pointer transition group shadow-sm"
                 >
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center space-x-2">
-                      <span className="font-bold text-sm text-white font-display group-hover:text-amber-300 transition">
+                      <span className="font-bold text-sm text-[var(--foreground)] font-display group-hover:text-amber-600 dark:group-hover:text-amber-400 transition">
                         {displayName} {item.chapter_number}
                       </span>
                     </div>
-                    <div className="flex items-center space-x-1.5 text-slate-500 group-hover:text-amber-400 transition">
+                    <div className="flex items-center space-x-1.5 text-[var(--muted-foreground)] group-hover:text-amber-600 dark:group-hover:text-amber-400 transition">
                       {item.updated_at && (
-                        <span className="text-[10px] text-slate-400 font-mono">
+                        <span className="text-[10px] text-[var(--muted-foreground)] font-mono">
                           {new Date(item.updated_at).toLocaleDateString(undefined, {
                             month: 'short',
                             day: 'numeric',
@@ -250,7 +250,7 @@ export function NotesDrawer({
                       <ChevronRight className="w-3.5 h-3.5" />
                     </div>
                   </div>
-                  <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed">
+                  <p className="text-xs text-[var(--muted-foreground)] line-clamp-2 leading-relaxed">
                     {preview || 'Empty note'}
                   </p>
                 </div>

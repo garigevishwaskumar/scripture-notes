@@ -113,6 +113,36 @@ export function BibleViewer({
     setTimeout(() => setCopiedIndex(null), 2000);
   };
 
+  const [fontFamily, setFontFamily] = useState<'times' | 'georgia' | 'sans'>('times');
+
+  // Load saved font family preference
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedFont = localStorage.getItem('scripture_font_family') as 'times' | 'georgia' | 'sans';
+      if (savedFont) setFontFamily(savedFont);
+    }
+  }, []);
+
+  const handleChangeFontFamily = (font: 'times' | 'georgia' | 'sans') => {
+    setFontFamily(font);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('scripture_font_family', font);
+    }
+  };
+
+  const getFontFamilyClass = () => {
+    switch (fontFamily) {
+      case 'times':
+        return 'font-nkjv';
+      case 'georgia':
+        return 'font-georgia';
+      case 'sans':
+        return 'font-sans-reading';
+      default:
+        return 'font-nkjv';
+    }
+  };
+
   // Audio Read Aloud using Web Speech API
   const toggleSpeech = () => {
     if (typeof window === 'undefined' || !window.speechSynthesis) return;
@@ -142,34 +172,71 @@ export function BibleViewer({
   const estimatedReadTime = Math.max(1, Math.ceil(wordCount / 200));
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-[#080b11] border-r border-white/[0.08] overflow-hidden">
-      {/* Chapter Editorial Header */}
-      <div className="px-4 sm:px-8 py-3.5 bg-card/60 border-b border-white/[0.08] flex items-center justify-between flex-shrink-0 backdrop-blur-md">
+    <div className="flex-1 flex flex-col h-full bg-[var(--background)] border-r border-[var(--border)] overflow-hidden transition-colors">
+      {/* Chapter Reader Controls Header */}
+      <div className="px-4 sm:px-8 py-3 bg-[var(--card)]/90 border-b border-[var(--border)] flex items-center justify-between flex-shrink-0 backdrop-blur-md">
         <div className="flex items-center space-x-3">
           <div className="flex flex-col">
             <div className="flex items-center space-x-2">
-              <span className="text-[10px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">
+              <span className="text-[10px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20">
                 {book?.testament === 'OT' ? 'Old Testament' : 'New Testament'}
               </span>
-              <span className="text-xs text-slate-400 font-mono hidden sm:inline">
+              <span className="text-xs text-slate-500 dark:text-slate-400 font-mono hidden sm:inline">
                 {verses.length} verses · ~{estimatedReadTime} min read
               </span>
             </div>
-            <h2 className="text-lg sm:text-xl font-bold text-white tracking-tight font-display mt-0.5">
+            <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white tracking-tight font-display mt-0.5">
               {book ? `${book.name} ${chapterNumber}` : 'Loading...'}
             </h2>
           </div>
         </div>
 
-        {/* Action Controls: Audio, Flow mode, Font zoom */}
+        {/* Action Controls: Font Selector, Audio, Flow mode, Font zoom */}
         <div className="flex items-center space-x-2">
+          {/* Font Family Switcher (Times New Roman / NKJV vs Georgia vs Sans) */}
+          <div className="hidden md:flex items-center space-x-1 bg-slate-100 dark:bg-white/[0.04] p-1 rounded-xl border border-slate-200 dark:border-white/[0.08]">
+            <button
+              onClick={() => handleChangeFontFamily('times')}
+              className={`px-2 py-1 rounded-lg text-xs font-serif transition cursor-pointer ${
+                fontFamily === 'times'
+                  ? 'bg-amber-500 text-slate-950 font-bold shadow-2xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              }`}
+              title="Times New Roman (NKJV Bible standard)"
+            >
+              Times (NKJV)
+            </button>
+            <button
+              onClick={() => handleChangeFontFamily('georgia')}
+              className={`px-2 py-1 rounded-lg text-xs font-serif transition cursor-pointer ${
+                fontFamily === 'georgia'
+                  ? 'bg-amber-500 text-slate-950 font-bold shadow-2xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              }`}
+              title="Georgia Serif"
+            >
+              Georgia
+            </button>
+            <button
+              onClick={() => handleChangeFontFamily('sans')}
+              className={`px-2 py-1 rounded-lg text-xs font-sans transition cursor-pointer ${
+                fontFamily === 'sans'
+                  ? 'bg-amber-500 text-slate-950 font-bold shadow-2xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              }`}
+              title="Clean Sans-Serif"
+            >
+              Sans
+            </button>
+          </div>
+
           {/* Read Aloud Button */}
           <button
             onClick={toggleSpeech}
             className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-medium transition cursor-pointer ${
               isSpeaking
                 ? 'bg-amber-500 text-slate-950 border-amber-400 font-bold shadow-md shadow-amber-500/25'
-                : 'bg-white/[0.04] hover:bg-white/[0.08] border-white/[0.08] text-slate-300 hover:text-white'
+                : 'bg-slate-100 hover:bg-slate-200 dark:bg-white/[0.04] dark:hover:bg-white/[0.08] border-slate-200 dark:border-white/[0.08] text-slate-700 dark:text-slate-300'
             }`}
             title={isSpeaking ? 'Stop reading' : 'Listen to chapter aloud'}
           >
@@ -180,7 +247,7 @@ export function BibleViewer({
               </>
             ) : (
               <>
-                <Volume2 className="w-3.5 h-3.5 text-amber-400" />
+                <Volume2 className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
                 <span className="hidden sm:inline">Listen</span>
               </>
             )}
@@ -189,18 +256,18 @@ export function BibleViewer({
           {/* Verse vs Paragraph Reading Mode */}
           <button
             onClick={() => setIsReadingModeParagraph(!isReadingModeParagraph)}
-            className="p-1.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-slate-300 hover:text-white text-xs transition cursor-pointer"
+            className="p-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/[0.04] dark:hover:bg-white/[0.08] border border-slate-200 dark:border-white/[0.08] text-slate-700 dark:text-slate-300 text-xs transition cursor-pointer"
             title={isReadingModeParagraph ? 'Switch to Verse-by-Verse' : 'Switch to Paragraph Prose'}
           >
             {isReadingModeParagraph ? (
-              <ListOrdered className="w-4 h-4 text-amber-400" />
+              <ListOrdered className="w-4 h-4 text-amber-600 dark:text-amber-400" />
             ) : (
-              <AlignLeft className="w-4 h-4 text-slate-300" />
+              <AlignLeft className="w-4 h-4 text-slate-700 dark:text-slate-300" />
             )}
           </button>
 
           {/* Font size control */}
-          <div className="flex items-center space-x-0.5 bg-white/[0.04] border border-white/[0.08] rounded-xl p-1">
+          <div className="flex items-center space-x-0.5 bg-slate-100 dark:bg-white/[0.04] border border-slate-200 dark:border-white/[0.08] rounded-xl p-1">
             <button
               onClick={() => {
                 if (fontSize === 'xl') onChangeFontSize('lg');
@@ -208,12 +275,12 @@ export function BibleViewer({
                 else if (fontSize === 'md') onChangeFontSize('sm');
               }}
               disabled={fontSize === 'sm'}
-              className="p-1 text-slate-400 hover:text-white disabled:opacity-30 rounded cursor-pointer"
+              className="p-1 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white disabled:opacity-30 rounded cursor-pointer"
               title="Decrease text size"
             >
               <ZoomOut className="w-3.5 h-3.5" />
             </button>
-            <span className="text-[11px] font-mono font-bold text-slate-400 px-1 uppercase min-w-[20px] text-center">
+            <span className="text-[11px] font-mono font-bold text-slate-700 dark:text-slate-400 px-1 uppercase min-w-[20px] text-center">
               {fontSize}
             </span>
             <button
@@ -223,7 +290,7 @@ export function BibleViewer({
                 else if (fontSize === 'lg') onChangeFontSize('xl');
               }}
               disabled={fontSize === 'xl'}
-              className="p-1 text-slate-400 hover:text-white disabled:opacity-30 rounded cursor-pointer"
+              className="p-1 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white disabled:opacity-30 rounded cursor-pointer"
               title="Increase text size"
             >
               <ZoomIn className="w-3.5 h-3.5" />
@@ -236,16 +303,11 @@ export function BibleViewer({
       <div className="flex-1 overflow-y-auto px-4 sm:px-12 md:px-16 py-8 space-y-4">
         {loading ? (
           <div className="space-y-4 py-8 animate-pulse max-w-2xl mx-auto">
-            <div className="h-8 bg-white/[0.06] rounded-xl w-1/3"></div>
+            <div className="h-8 bg-slate-200 dark:bg-white/[0.06] rounded-xl w-1/3"></div>
             <div className="space-y-3 pt-4">
-              <div className="h-5 bg-white/[0.04] rounded-lg w-full"></div>
-              <div className="h-5 bg-white/[0.04] rounded-lg w-5/6"></div>
-              <div className="h-5 bg-white/[0.04] rounded-lg w-11/12"></div>
-              <div className="h-5 bg-white/[0.04] rounded-lg w-4/5"></div>
-            </div>
-            <div className="space-y-3 pt-4">
-              <div className="h-5 bg-white/[0.04] rounded-lg w-full"></div>
-              <div className="h-5 bg-white/[0.04] rounded-lg w-3/4"></div>
+              <div className="h-5 bg-slate-200 dark:bg-white/[0.04] rounded-lg w-full"></div>
+              <div className="h-5 bg-slate-200 dark:bg-white/[0.04] rounded-lg w-5/6"></div>
+              <div className="h-5 bg-slate-200 dark:bg-white/[0.04] rounded-lg w-11/12"></div>
             </div>
           </div>
         ) : verses.length === 0 ? (
@@ -254,21 +316,21 @@ export function BibleViewer({
           </div>
         ) : (
           <div className="max-w-3xl mx-auto">
-            {/* Elegant Chapter Opener Plate */}
-            <div className="text-center py-6 mb-4 border-b border-white/[0.06]">
-              <span className="text-xs font-semibold text-amber-400/90 tracking-widest uppercase font-sans">
+            {/* Classical Bible Chapter Header */}
+            <div className="text-center py-6 mb-6 border-b border-slate-200 dark:border-white/[0.08]">
+              <span className="text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-widest font-sans">
                 The Holy Bible · King James Version
               </span>
-              <h1 className="text-2xl sm:text-4xl font-serif font-normal text-white mt-1 mb-2 tracking-tight">
+              <h1 className="text-3xl sm:text-4xl font-serif text-slate-900 dark:text-white font-normal mt-1 mb-2 tracking-wide">
                 {book?.name}
               </h1>
-              <div className="inline-block px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.08] text-xs font-mono text-slate-400">
+              <div className="inline-block px-3 py-1 rounded-full bg-slate-100 dark:bg-white/[0.04] border border-slate-200 dark:border-white/[0.08] text-xs font-serif text-slate-700 dark:text-slate-300">
                 Chapter {chapterNumber}
               </div>
             </div>
 
-            {/* Verses Display (Verse-by-Verse or Paragraph) */}
-            <div className={`font-scripture ${getFontSizeClasses()} text-slate-200 select-text`}>
+            {/* Verses Display with Times New Roman NKJV Typography */}
+            <div className={`${getFontFamilyClass()} ${getFontSizeClasses()} text-[var(--verse-text)] select-text`}>
               {verses.map((verseText, idx) => {
                 const verseNum = idx + 1;
                 const isSelected = selectedVerseIndex === verseNum;
@@ -277,37 +339,58 @@ export function BibleViewer({
 
                 const highlightClasses = highlight
                   ? highlight === 'amber'
-                    ? 'highlight-amber rounded-r-xl'
+                    ? 'highlight-amber rounded-r-lg'
                     : highlight === 'emerald'
-                    ? 'highlight-emerald rounded-r-xl'
+                    ? 'highlight-emerald rounded-r-lg'
                     : highlight === 'blue'
-                    ? 'highlight-blue rounded-r-xl'
-                    : 'highlight-purple rounded-r-xl'
+                    ? 'highlight-blue rounded-r-lg'
+                    : 'highlight-purple rounded-r-lg'
                   : '';
+
+                if (isReadingModeParagraph) {
+                  return (
+                    <span
+                      key={verseNum}
+                      onClick={() => setSelectedVerseIndex(isSelected ? null : verseNum)}
+                      className={`inline cursor-pointer transition ${
+                        isSelected
+                          ? 'bg-amber-500/20 rounded px-1'
+                          : highlightClasses
+                      }`}
+                    >
+                      <sup className="text-xs font-bold text-amber-700 dark:text-amber-400 mr-1 select-none font-sans">
+                        {verseNum}
+                      </sup>
+                      <span className="mr-1.5">{verseText}</span>
+                    </span>
+                  );
+                }
 
                 return (
                   <div
                     key={verseNum}
                     onClick={() => setSelectedVerseIndex(isSelected ? null : verseNum)}
-                    className={`group relative p-2.5 rounded-xl transition duration-150 cursor-pointer ${
+                    className={`group relative p-2 rounded-xl transition duration-150 cursor-pointer mb-2 ${
                       isSelected
-                        ? 'bg-white/[0.07] ring-1 ring-amber-500/40 shadow-lg'
-                        : highlightClasses || 'hover:bg-white/[0.03]'
-                    } ${isReadingModeParagraph ? 'inline' : 'block mb-2'}`}
+                        ? 'bg-slate-100 dark:bg-white/[0.07] ring-1 ring-amber-500/50 shadow-sm'
+                        : highlightClasses || 'hover:bg-slate-100/70 dark:hover:bg-white/[0.03]'
+                    }`}
                   >
-                    {/* Verse Number Badge */}
-                    <span className="select-none font-sans font-bold text-amber-500/80 text-xs sm:text-sm mr-2 inline-flex items-center justify-center min-w-[1.4rem] opacity-75 group-hover:opacity-100 transition">
-                      {verseNum}
-                    </span>
+                    <div className="flex items-baseline space-x-2">
+                      {/* Compact, authentic Bible verse number */}
+                      <span className="select-none font-sans font-bold text-xs sm:text-sm text-amber-700 dark:text-amber-400 min-w-[1.2rem] text-right inline-block opacity-85 group-hover:opacity-100 transition">
+                        {verseNum}
+                      </span>
 
-                    {/* Verse Text (with Drop Cap on Verse 1 for classic beauty) */}
-                    <span className="text-slate-100/95 tracking-normal">
-                      {verseText}
-                    </span>
+                      {/* Verse Text in Times New Roman */}
+                      <span className="text-[var(--verse-text)] leading-[1.8] flex-1">
+                        {verseText}
+                      </span>
+                    </div>
 
                     {/* Context Action Overlay Bar when clicked or hovered */}
                     <div
-                      className={`mt-2.5 pt-2 border-t border-white/[0.08] items-center justify-between text-xs font-sans transition-all duration-200 ${
+                      className={`mt-2 pt-2 border-t border-slate-200 dark:border-white/[0.08] items-center justify-between text-xs font-sans transition-all duration-200 ${
                         isSelected
                           ? 'opacity-100 flex'
                           : 'opacity-0 group-hover:opacity-100 hidden group-hover:flex'
@@ -316,31 +399,31 @@ export function BibleViewer({
                     >
                       {/* Highlighting Palette */}
                       <div className="flex items-center space-x-1.5">
-                        <Highlighter className="w-3.5 h-3.5 text-slate-400 mr-0.5" />
+                        <Highlighter className="w-3.5 h-3.5 text-slate-500 mr-0.5" />
                         <button
                           onClick={() => handleSetHighlight(verseNum, 'amber')}
-                          className="w-4 h-4 rounded-full bg-amber-400 hover:scale-125 transition shadow-sm cursor-pointer"
-                          title="Highlight Amber (Promise / Faith)"
+                          className="w-4 h-4 rounded-full bg-amber-400 hover:scale-125 transition shadow-2xs cursor-pointer"
+                          title="Highlight Amber"
                         />
                         <button
                           onClick={() => handleSetHighlight(verseNum, 'emerald')}
-                          className="w-4 h-4 rounded-full bg-emerald-400 hover:scale-125 transition shadow-sm cursor-pointer"
-                          title="Highlight Emerald (Wisdom / Growth)"
+                          className="w-4 h-4 rounded-full bg-emerald-400 hover:scale-125 transition shadow-2xs cursor-pointer"
+                          title="Highlight Emerald"
                         />
                         <button
                           onClick={() => handleSetHighlight(verseNum, 'blue')}
-                          className="w-4 h-4 rounded-full bg-sky-400 hover:scale-125 transition shadow-sm cursor-pointer"
-                          title="Highlight Blue (Peace / Grace)"
+                          className="w-4 h-4 rounded-full bg-sky-400 hover:scale-125 transition shadow-2xs cursor-pointer"
+                          title="Highlight Blue"
                         />
                         <button
                           onClick={() => handleSetHighlight(verseNum, 'purple')}
-                          className="w-4 h-4 rounded-full bg-purple-400 hover:scale-125 transition shadow-sm cursor-pointer"
-                          title="Highlight Purple (Prophecy / Royalty)"
+                          className="w-4 h-4 rounded-full bg-purple-400 hover:scale-125 transition shadow-2xs cursor-pointer"
+                          title="Highlight Purple"
                         />
                         {highlight && (
                           <button
                             onClick={() => handleSetHighlight(verseNum, null)}
-                            className="text-[10px] text-slate-400 hover:text-red-400 ml-1 underline cursor-pointer"
+                            className="text-[10px] text-slate-500 hover:text-red-500 ml-1 underline cursor-pointer"
                           >
                             Clear
                           </button>
@@ -351,8 +434,8 @@ export function BibleViewer({
                       <div className="flex items-center space-x-2">
                         <button
                           onClick={() => onInsertVerseQuote(verseNum, verseText)}
-                          className="flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 transition text-xs font-semibold cursor-pointer shadow-sm"
-                          title="Append this verse into your chapter study notes"
+                          className="flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 text-amber-700 dark:text-amber-300 border border-amber-500/30 transition text-xs font-semibold cursor-pointer shadow-2xs"
+                          title="Append this verse into your study notes"
                         >
                           <PlusCircle className="w-3.5 h-3.5" />
                           <span>Quote in Notes</span>
@@ -360,16 +443,16 @@ export function BibleViewer({
 
                         <button
                           onClick={() => handleCopyVerse(verseNum, verseText)}
-                          className="flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-white/[0.06] hover:bg-white/[0.1] text-slate-200 border border-white/[0.1] transition text-xs font-medium cursor-pointer"
+                          className="flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-slate-200 dark:bg-white/[0.06] hover:bg-slate-300 dark:hover:bg-white/[0.1] text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-white/[0.1] transition text-xs font-medium cursor-pointer"
                         >
                           {isCopied ? (
                             <>
-                              <Check className="w-3.5 h-3.5 text-emerald-400" />
-                              <span className="text-emerald-400">Copied!</span>
+                              <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                              <span className="text-emerald-600 dark:text-emerald-400">Copied!</span>
                             </>
                           ) : (
                             <>
-                              <Copy className="w-3.5 h-3.5 text-slate-400" />
+                              <Copy className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
                               <span>Copy</span>
                             </>
                           )}
@@ -382,11 +465,11 @@ export function BibleViewer({
             </div>
 
             {/* Chapter Navigation Footer */}
-            <div className="pt-12 pb-8 flex items-center justify-between border-t border-white/[0.08] mt-8">
+            <div className="pt-10 pb-8 flex items-center justify-between border-t border-slate-200 dark:border-white/[0.08] mt-8">
               <button
                 onClick={onNavigatePrev}
                 disabled={!hasPrev}
-                className="flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-card hover:bg-white/[0.06] border border-white/[0.08] text-slate-200 hover:text-white disabled:opacity-25 disabled:pointer-events-none transition text-sm cursor-pointer shadow-sm group"
+                className="flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-card dark:hover:bg-white/[0.06] border border-slate-300 dark:border-white/[0.08] text-slate-800 dark:text-slate-200 disabled:opacity-25 disabled:pointer-events-none transition text-sm cursor-pointer shadow-2xs group font-medium"
               >
                 <ChevronLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition" />
                 <span>Previous Chapter</span>
@@ -399,7 +482,7 @@ export function BibleViewer({
               <button
                 onClick={onNavigateNext}
                 disabled={!hasNext}
-                className="flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-card hover:bg-white/[0.06] border border-white/[0.08] text-slate-200 hover:text-white disabled:opacity-25 disabled:pointer-events-none transition text-sm cursor-pointer shadow-sm group"
+                className="flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-card dark:hover:bg-white/[0.06] border border-slate-300 dark:border-white/[0.08] text-slate-800 dark:text-slate-200 disabled:opacity-25 disabled:pointer-events-none transition text-sm cursor-pointer shadow-2xs group font-medium"
               >
                 <span>Next Chapter</span>
                 <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition" />

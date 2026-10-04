@@ -67,27 +67,27 @@ export function BookChapterModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-xl animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/60 backdrop-blur-md animate-in fade-in duration-200"
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-3xl max-h-[85vh] bg-[#0c101a] border border-white/[0.1] rounded-3xl shadow-2xl shadow-black/80 flex flex-col text-slate-100 overflow-hidden ring-1 ring-white/10"
+        className="relative w-full max-w-3xl max-h-[85vh] bg-[var(--card)] border border-[var(--border)] rounded-3xl shadow-2xl flex flex-col text-[var(--foreground)] overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Top Header */}
-        <div className="p-4 sm:p-6 border-b border-white/[0.08] flex items-center justify-between bg-card/40">
+        <div className="p-4 sm:p-6 border-b border-[var(--border)] flex items-center justify-between bg-slate-50/50 dark:bg-card/40">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+            <div className="w-10 h-10 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-700 dark:text-amber-400">
               <BookOpen className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-white font-display">Scripture Library</h3>
-              <p className="text-xs text-slate-400">Choose any of the 66 Books of the King James Bible</p>
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white font-display">Scripture Library</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Browse all 66 Books of the Holy Bible (KJV)</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.08] transition cursor-pointer"
+            className="p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/[0.08] transition cursor-pointer"
             title="Close (Esc)"
           >
             <X className="w-5 h-5" />
@@ -95,7 +95,7 @@ export function BookChapterModal({
         </div>
 
         {/* Filter & Search Bar */}
-        <div className="p-4 bg-black/30 border-b border-white/[0.08] flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
+        <div className="p-4 bg-slate-100/70 dark:bg-black/30 border-b border-[var(--border)] flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
           <div className="relative flex-1">
             <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
             <input
@@ -103,26 +103,26 @@ export function BookChapterModal({
               placeholder="Search books (e.g. John, Psalms, Romans, Genesis)..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-9 py-2 bg-white/[0.05] border border-white/[0.1] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500/20 transition"
+              className="w-full pl-10 pr-9 py-2 bg-white dark:bg-white/[0.05] border border-slate-300 dark:border-white/[0.1] rounded-xl text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500/20 transition shadow-2xs"
               autoFocus
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-2.5 text-slate-400 hover:text-white cursor-pointer"
+                className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             )}
           </div>
 
-          <div className="flex items-center space-x-1 bg-black/40 p-1 rounded-xl border border-white/[0.08] self-start sm:self-auto">
+          <div className="flex items-center space-x-1 bg-white dark:bg-black/40 p-1 rounded-xl border border-slate-300 dark:border-white/[0.08] self-start sm:self-auto shadow-2xs">
             <button
               onClick={() => setSelectedTestament('ALL')}
               className={`px-3 py-1 text-xs font-semibold rounded-lg transition cursor-pointer ${
                 selectedTestament === 'ALL'
-                  ? 'bg-amber-500 text-slate-950 shadow-sm'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-amber-500 text-slate-950 shadow-2xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               All (66)
@@ -131,8 +131,8 @@ export function BookChapterModal({
               onClick={() => setSelectedTestament('OT')}
               className={`px-3 py-1 text-xs font-semibold rounded-lg transition cursor-pointer ${
                 selectedTestament === 'OT'
-                  ? 'bg-amber-500 text-slate-950 shadow-sm'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-amber-500 text-slate-950 shadow-2xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               Old Test. (39)
@@ -141,8 +141,8 @@ export function BookChapterModal({
               onClick={() => setSelectedTestament('NT')}
               className={`px-3 py-1 text-xs font-semibold rounded-lg transition cursor-pointer ${
                 selectedTestament === 'NT'
-                  ? 'bg-amber-500 text-slate-950 shadow-sm'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-amber-500 text-slate-950 shadow-2xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               New Test. (27)
@@ -151,7 +151,7 @@ export function BookChapterModal({
         </div>
 
         {/* Content Area: Dual pane (Books on Left, Chapters on Right) */}
-        <div className="flex-1 min-h-[350px] overflow-hidden grid grid-cols-1 md:grid-cols-12 divide-y md:divide-y-0 md:divide-x divide-white/[0.08]">
+        <div className="flex-1 min-h-[350px] overflow-hidden grid grid-cols-1 md:grid-cols-12 divide-y md:divide-y-0 md:divide-x divide-[var(--border)]">
           {/* Books List (col-span-5) */}
           <div className="md:col-span-5 overflow-y-auto max-h-[350px] md:max-h-[500px] p-2 space-y-1">
             {filteredBooks.length === 0 ? (
@@ -168,23 +168,23 @@ export function BookChapterModal({
                     onClick={() => setActiveBook(book)}
                     className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-left text-sm transition cursor-pointer ${
                       isSelected
-                        ? 'bg-amber-500/15 border border-amber-500/30 text-amber-300 font-bold'
-                        : 'text-slate-300 hover:bg-white/[0.05] hover:text-white'
+                        ? 'bg-amber-500/15 border border-amber-500/30 text-amber-800 dark:text-amber-300 font-bold'
+                        : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/[0.05] hover:text-slate-900 dark:hover:text-white'
                     }`}
                   >
                     <div className="flex items-center space-x-2.5">
                       <span
                         className={`text-[10px] px-1.5 py-0.5 rounded font-mono font-bold ${
                           book.testament === 'OT'
-                            ? 'bg-blue-500/15 text-blue-300 border border-blue-500/25'
-                            : 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/25'
+                            ? 'bg-blue-500/15 text-blue-700 dark:text-blue-300 border border-blue-500/25'
+                            : 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/25'
                         }`}
                       >
                         {book.testament}
                       </span>
-                      <span>{book.name}</span>
+                      <span className="font-serif font-medium">{book.name}</span>
                       {isCurrent && (
-                        <span className="text-[10px] bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded font-mono">
+                        <span className="text-[10px] bg-amber-500/20 text-amber-800 dark:text-amber-300 px-1.5 py-0.5 rounded font-mono font-bold">
                           Active
                         </span>
                       )}
@@ -200,17 +200,17 @@ export function BookChapterModal({
           </div>
 
           {/* Chapters Grid (col-span-7) */}
-          <div className="md:col-span-7 overflow-y-auto max-h-[350px] md:max-h-[500px] p-5 flex flex-col bg-black/10">
+          <div className="md:col-span-7 overflow-y-auto max-h-[350px] md:max-h-[500px] p-5 flex flex-col bg-slate-50/40 dark:bg-black/10">
             {activeBook ? (
               <>
-                <div className="flex items-center justify-between mb-4 pb-3 border-b border-white/[0.08]">
+                <div className="flex items-center justify-between mb-4 pb-3 border-b border-[var(--border)]">
                   <div className="flex items-center space-x-2">
-                    <Layers className="w-4 h-4 text-amber-400" />
-                    <span className="text-base font-bold text-white font-display">
+                    <Layers className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                    <span className="text-base font-bold text-slate-900 dark:text-white font-display">
                       {activeBook.name} ({activeBook.chapterCount} Chapters)
                     </span>
                   </div>
-                  <span className="text-xs text-slate-400 font-mono">
+                  <span className="text-xs text-slate-500 dark:text-slate-400 font-mono">
                     {activeBook.testament === 'OT' ? 'Old Testament' : 'New Testament'}
                   </span>
                 </div>
@@ -228,8 +228,8 @@ export function BookChapterModal({
                         }}
                         className={`h-11 rounded-xl font-semibold text-sm flex items-center justify-center transition border cursor-pointer ${
                           isSelectedChapter
-                            ? 'bg-amber-500 border-amber-400 text-slate-950 font-bold shadow-lg shadow-amber-500/30'
-                            : 'bg-white/[0.04] border-white/[0.08] text-slate-200 hover:bg-white/[0.1] hover:border-amber-500/50 hover:text-amber-300'
+                            ? 'bg-amber-500 border-amber-400 text-slate-950 font-bold shadow-md shadow-amber-500/25'
+                            : 'bg-white dark:bg-white/[0.04] border-slate-300 dark:border-white/[0.08] text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/[0.1] hover:border-amber-500/50 hover:text-amber-700 dark:hover:text-amber-300 shadow-2xs'
                         }`}
                       >
                         {chNum}
@@ -247,11 +247,11 @@ export function BookChapterModal({
         </div>
 
         {/* Modal Footer */}
-        <div className="p-3.5 bg-black/40 border-t border-white/[0.08] text-xs text-slate-400 flex items-center justify-between">
-          <span>Tip: Use <kbd className="bg-white/10 px-1 py-0.5 rounded font-mono text-[10px]">←</kbd> and <kbd className="bg-white/10 px-1 py-0.5 rounded font-mono text-[10px]">→</kbd> to quickly flip through chapters while reading</span>
+        <div className="p-3.5 bg-slate-100/70 dark:bg-black/40 border-t border-[var(--border)] text-xs text-slate-500 dark:text-slate-400 flex items-center justify-between">
+          <span>Tip: Use <kbd className="bg-slate-200 dark:bg-white/10 px-1 py-0.5 rounded font-mono text-[10px]">←</kbd> and <kbd className="bg-slate-200 dark:bg-white/10 px-1 py-0.5 rounded font-mono text-[10px]">→</kbd> to quickly flip through chapters</span>
           <button
             onClick={onClose}
-            className="px-3 py-1 bg-white/[0.06] hover:bg-white/[0.1] text-slate-300 rounded-lg transition cursor-pointer"
+            className="px-3 py-1 bg-white dark:bg-white/[0.06] hover:bg-slate-200 dark:hover:bg-white/[0.1] text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-white/[0.1] rounded-lg transition cursor-pointer"
           >
             Close
           </button>

@@ -70,6 +70,7 @@ export default function RootLayout({
     <html
       lang="en"
       className={`dark h-full antialiased ${sansFont.variable} ${scriptureFont.variable} ${serifDisplay.variable}`}
+      suppressHydrationWarning
     >
       <head>
         <meta name="application-name" content="ScriptureNotes" />
@@ -77,8 +78,22 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="ScriptureNotes" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                const mode = localStorage.getItem('scripture_mode');
+                if (mode === 'light') {
+                  document.documentElement.classList.remove('dark');
+                } else {
+                  document.documentElement.classList.add('dark');
+                }
+              } catch (e) {}
+            `,
+          }}
+        />
       </head>
-      <body className="min-h-full flex flex-col font-sans bg-[#080b11] text-slate-100 selection:bg-amber-500/25 selection:text-amber-200">
+      <body className="min-h-full flex flex-col font-sans bg-[var(--background)] text-[var(--foreground)] selection:bg-amber-500/25 selection:text-amber-700 dark:selection:text-amber-200">
         <Providers>{children}</Providers>
       </body>
     </html>

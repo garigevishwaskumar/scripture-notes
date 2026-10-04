@@ -1,43 +1,51 @@
 @import "tailwindcss";
 
 :root {
-  --background: #080b11;
-  --foreground: #f3f6fc;
-  --card: #0e131f;
-  --card-foreground: #f8fafc;
-  --primary: #f59e0b;
-  --primary-foreground: #080b11;
-  --border: #1a2233;
+  /* Default: Clean crisp Bible Light Mode */
+  --background: #fbfbf9;
+  --foreground: #18181b;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --card-border: #e2e8f0;
+  --primary: #d97706;
+  --primary-foreground: #ffffff;
+  --border: #e2e8f0;
   --muted: #64748b;
-  --accent: #1e293b;
+  --verse-text: #1a1a1e;
+  --verse-num: #b45309;
+  --surface-alt: #f4f4f5;
+  --input-bg: #ffffff;
+  --note-bg: #ffffff;
+  --hover-surface: rgba(0, 0, 0, 0.04);
 }
 
-[data-theme="parchment"] {
-  --background: #14120e;
-  --foreground: #f4ece1;
-  --card: #1c1813;
-  --card-foreground: #faf5ed;
-  --border: #2e261e;
-  --muted: #8c7e6c;
-}
-
-[data-theme="navy"] {
-  --background: #060b17;
-  --foreground: #eef3ff;
-  --card: #0c152a;
-  --card-foreground: #ffffff;
-  --border: #172440;
-  --muted: #62779f;
+.dark {
+  /* Premium Obsidian Dark Mode */
+  --background: #090d16;
+  --foreground: #f8fafc;
+  --card: #0f172a;
+  --card-foreground: #f8fafc;
+  --card-border: rgba(255, 255, 255, 0.08);
+  --primary: #f59e0b;
+  --primary-foreground: #090d16;
+  --border: #1e293b;
+  --muted: #94a3b8;
+  --verse-text: #f1f5f9;
+  --verse-num: #f59e0b;
+  --surface-alt: #162035;
+  --input-bg: #0b1120;
+  --note-bg: #0b1120;
+  --hover-surface: rgba(255, 255, 255, 0.05);
 }
 
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  transition: background-color 0.25s ease, color 0.25s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 /* Mobile input zoom prevention */
@@ -47,8 +55,8 @@ input, select, textarea {
 
 /* Custom sleek scrollbar */
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -56,23 +64,31 @@ input, select, textarea {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(140, 140, 140, 0.25);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(140, 140, 140, 0.45);
 }
 
-/* Scripture reading font styling */
-.font-scripture {
-  font-family: var(--font-scripture), 'Newsreader', 'Georgia', 'Cambria', serif;
-  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+/* NKJV Classic Bible Typography: Times New Roman */
+.font-nkjv {
+  font-family: 'Times New Roman', Times, 'Baskerville', 'Cardo', 'Georgia', serif;
+  font-feature-settings: "kern" 1, "liga" 1;
+}
+
+.font-georgia {
+  font-family: 'Georgia', 'Cambria', 'Times New Roman', serif;
+}
+
+.font-sans-reading {
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
 }
 
 .font-display {
-  font-family: var(--font-display), 'Cinzel', serif;
-  letter-spacing: 0.08em;
+  font-family: var(--font-display), 'Times New Roman', serif;
+  letter-spacing: 0.05em;
 }
 
 /* Luxury glow effects */
@@ -84,35 +100,30 @@ input, select, textarea {
   box-shadow: 0 0 20px -3px rgba(245, 158, 11, 0.15);
 }
 
-/* Ambient vignette */
-.radial-vignette {
-  background-radial: radial-gradient(circle at 50% 0%, rgba(245, 158, 11, 0.04) 0%, transparent 60%);
-}
-
 /* Verse highlight styles */
 .highlight-amber {
-  background-color: rgba(245, 158, 11, 0.18);
+  background-color: rgba(245, 158, 11, 0.22);
   border-left: 3px solid #f59e0b;
 }
 
 .highlight-emerald {
-  background-color: rgba(16, 185, 129, 0.18);
+  background-color: rgba(16, 185, 129, 0.2);
   border-left: 3px solid #10b981;
 }
 
 .highlight-blue {
-  background-color: rgba(56, 189, 248, 0.18);
-  border-left: 3px solid #38bdf8;
+  background-color: rgba(56, 189, 248, 0.2);
+  border-left: 3px solid #0284c7;
 }
 
 .highlight-rose {
-  background-color: rgba(244, 63, 94, 0.18);
-  border-left: 3px solid #f43f5e;
+  background-color: rgba(244, 63, 94, 0.2);
+  border-left: 3px solid #e11d48;
 }
 
 .highlight-purple {
-  background-color: rgba(168, 85, 247, 0.18);
-  border-left: 3px solid #a855f7;
+  background-color: rgba(168, 85, 247, 0.2);
+  border-left: 3px solid #9333ea;
 }
 
 /* Sync animations */
@@ -124,4 +135,5 @@ input, select, textarea {
 .animate-syncing {
   animation: syncPulse 1.2s infinite ease-in-out;
 }
+
 

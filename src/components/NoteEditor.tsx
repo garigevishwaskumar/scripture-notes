@@ -177,19 +177,19 @@ export function NoteEditor({
   };
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-[#0a0e18] overflow-hidden">
+    <div className="flex-1 flex flex-col h-full bg-[var(--background)] overflow-hidden transition-colors">
       {/* Editor Header */}
-      <div className="px-4 sm:px-6 py-3.5 bg-card/60 border-b border-white/[0.08] flex flex-wrap items-center justify-between gap-2 flex-shrink-0 backdrop-blur-md">
+      <div className="px-4 sm:px-6 py-3 bg-[var(--card)]/90 border-b border-[var(--border)] flex flex-wrap items-center justify-between gap-2 flex-shrink-0 backdrop-blur-md">
         <div>
           <div className="flex items-center space-x-2">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400 px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400 px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20">
               Study Journal
             </span>
-            <span className="text-xs text-slate-400 font-mono hidden sm:inline">
+            <span className="text-xs text-slate-500 dark:text-slate-400 font-mono hidden sm:inline">
               {wordCount} words
             </span>
           </div>
-          <h2 className="text-base sm:text-lg font-bold text-white tracking-tight font-display mt-0.5">
+          <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white tracking-tight font-display mt-0.5">
             {bookName} Chapter {chapterNumber}
           </h2>
         </div>
@@ -197,13 +197,13 @@ export function NoteEditor({
         {/* Sync Status Indicator & Mode Switch */}
         <div className="flex items-center space-x-2">
           {/* Write / Preview Mode Toggle */}
-          <div className="flex items-center bg-black/40 border border-white/[0.08] rounded-xl p-0.5">
+          <div className="flex items-center bg-slate-100 dark:bg-black/40 border border-slate-200 dark:border-white/[0.08] rounded-xl p-0.5">
             <button
               onClick={() => setEditorMode('write')}
               className={`flex items-center space-x-1 px-2.5 py-1 rounded-lg text-xs font-semibold transition cursor-pointer ${
                 editorMode === 'write'
-                  ? 'bg-amber-500 text-slate-950 shadow-sm'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-amber-500 text-slate-950 shadow-2xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               <Edit3 className="w-3.5 h-3.5" />
@@ -213,8 +213,8 @@ export function NoteEditor({
               onClick={() => setEditorMode('preview')}
               className={`flex items-center space-x-1 px-2.5 py-1 rounded-lg text-xs font-semibold transition cursor-pointer ${
                 editorMode === 'preview'
-                  ? 'bg-amber-500 text-slate-950 shadow-sm'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-amber-500 text-slate-950 shadow-2xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               <Eye className="w-3.5 h-3.5" />
@@ -224,22 +224,22 @@ export function NoteEditor({
 
           {/* Sync badge */}
           {syncStatus === 'saving' && (
-            <div className="flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs">
+            <div className="flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-400 text-xs">
               <CloudUpload className="w-3.5 h-3.5 animate-bounce" />
               <span className="hidden sm:inline">Saving...</span>
             </div>
           )}
 
           {syncStatus === 'saved' && (
-            <div className="flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs" title="Synced with Supabase Cloud">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400"></span>
+            <div className="flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-xs" title="Synced with Supabase Cloud">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-2xs shadow-emerald-400"></span>
               <span className="hidden sm:inline">Cloud Synced</span>
             </div>
           )}
 
           {syncStatus === 'local' && (
-            <div className="flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-white/[0.06] border border-white/[0.1] text-slate-300 text-xs" title="Saved locally in browser">
-              <HardDrive className="w-3.5 h-3.5 text-slate-400" />
+            <div className="flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-white/[0.06] border border-slate-200 dark:border-white/[0.1] text-slate-700 dark:text-slate-300 text-xs" title="Saved locally in browser">
+              <HardDrive className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
               <span className="hidden sm:inline">Saved locally</span>
             </div>
           )}
@@ -247,7 +247,7 @@ export function NoteEditor({
           {syncStatus === 'error' && (
             <button
               onClick={onForceSave}
-              className="flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-red-950/40 border border-red-800 text-red-300 text-xs hover:bg-red-900/40 transition cursor-pointer"
+              className="flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-red-100 dark:bg-red-950/40 border border-red-300 dark:border-red-800 text-red-700 dark:text-red-300 text-xs hover:bg-red-200 dark:hover:bg-red-900/40 transition cursor-pointer"
               title={errorMessage || 'Error saving. Click to retry.'}
             >
               <AlertCircle className="w-3.5 h-3.5" />
@@ -256,19 +256,19 @@ export function NoteEditor({
           )}
 
           {/* Quick Note Actions */}
-          <div className="flex items-center space-x-1 border-l border-white/[0.08] pl-2">
+          <div className="flex items-center space-x-1 border-l border-slate-200 dark:border-white/[0.08] pl-2">
             <button
               onClick={handleCopyNote}
               disabled={!content}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.06] disabled:opacity-30 transition cursor-pointer"
+              className="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/[0.06] disabled:opacity-30 transition cursor-pointer"
               title="Copy notes"
             >
-              {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+              {copied ? <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> : <Copy className="w-4 h-4" />}
             </button>
             <button
               onClick={handleDownloadNote}
               disabled={!content}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.06] disabled:opacity-30 transition cursor-pointer"
+              className="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/[0.06] disabled:opacity-30 transition cursor-pointer"
               title="Download Markdown note (.md)"
             >
               <Download className="w-4 h-4" />
@@ -278,13 +278,13 @@ export function NoteEditor({
       </div>
 
       {/* Formatting & Study Tag Chips */}
-      <div className="px-4 py-2 bg-card/40 border-b border-white/[0.08] flex items-center justify-between gap-2 flex-shrink-0 overflow-x-auto">
+      <div className="px-4 py-2 bg-[var(--card)]/60 border-b border-[var(--border)] flex items-center justify-between gap-2 flex-shrink-0 overflow-x-auto">
         {/* Markdown Toolbar */}
-        <div className="flex items-center space-x-1 text-slate-400 text-xs">
+        <div className="flex items-center space-x-1 text-slate-600 dark:text-slate-400 text-xs">
           <button
             type="button"
             onClick={() => insertFormatting('**', '**', 'bold')}
-            className="p-1.5 hover:text-white hover:bg-white/[0.08] rounded-lg transition cursor-pointer"
+            className="p-1.5 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/[0.08] rounded-lg transition cursor-pointer"
             title="Bold"
           >
             <Bold className="w-3.5 h-3.5" />
@@ -292,7 +292,7 @@ export function NoteEditor({
           <button
             type="button"
             onClick={() => insertFormatting('*', '*', 'italic')}
-            className="p-1.5 hover:text-white hover:bg-white/[0.08] rounded-lg transition cursor-pointer"
+            className="p-1.5 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/[0.08] rounded-lg transition cursor-pointer"
             title="Italic"
           >
             <Italic className="w-3.5 h-3.5" />
@@ -300,7 +300,7 @@ export function NoteEditor({
           <button
             type="button"
             onClick={() => insertFormatting('\n### ', '\n', 'Section Title')}
-            className="p-1.5 hover:text-white hover:bg-white/[0.08] rounded-lg transition cursor-pointer"
+            className="p-1.5 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/[0.08] rounded-lg transition cursor-pointer"
             title="Heading"
           >
             <Heading2 className="w-3.5 h-3.5" />
@@ -308,7 +308,7 @@ export function NoteEditor({
           <button
             type="button"
             onClick={() => insertFormatting('\n- ', '\n', 'Item')}
-            className="p-1.5 hover:text-white hover:bg-white/[0.08] rounded-lg transition cursor-pointer"
+            className="p-1.5 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/[0.08] rounded-lg transition cursor-pointer"
             title="Bullet List"
           >
             <List className="w-3.5 h-3.5" />
@@ -316,7 +316,7 @@ export function NoteEditor({
           <button
             type="button"
             onClick={() => insertFormatting('\n> ', '\n', 'Scripture quote or reflection')}
-            className="p-1.5 hover:text-white hover:bg-white/[0.08] rounded-lg transition cursor-pointer"
+            className="p-1.5 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/[0.08] rounded-lg transition cursor-pointer"
             title="Quote block"
           >
             <Quote className="w-3.5 h-3.5" />
@@ -333,7 +333,7 @@ export function NoteEditor({
               });
               insertFormatting(`\n*Reflected on: ${now}*\n\n`);
             }}
-            className="p-1.5 hover:text-white hover:bg-white/[0.08] rounded-lg transition cursor-pointer"
+            className="p-1.5 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/[0.08] rounded-lg transition cursor-pointer"
             title="Timestamp"
           >
             <Clock className="w-3.5 h-3.5" />
@@ -344,27 +344,27 @@ export function NoteEditor({
         <div className="flex items-center space-x-1.5 text-xs">
           <button
             onClick={() => insertTemplate('### 🕊️ Prayer & Thanksgiving')}
-            className="px-2 py-0.5 rounded-full bg-white/[0.04] hover:bg-amber-500/15 border border-white/[0.08] hover:border-amber-500/30 text-slate-300 hover:text-amber-300 transition text-[11px] cursor-pointer"
+            className="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-white/[0.04] hover:bg-amber-500/15 border border-slate-200 dark:border-white/[0.08] hover:border-amber-500/30 text-slate-700 dark:text-slate-300 hover:text-amber-700 dark:hover:text-amber-300 transition text-[11px] cursor-pointer"
           >
             + Prayer
           </button>
           <button
             onClick={() => insertTemplate('### 🌟 God\'s Promise')}
-            className="px-2 py-0.5 rounded-full bg-white/[0.04] hover:bg-amber-500/15 border border-white/[0.08] hover:border-amber-500/30 text-slate-300 hover:text-amber-300 transition text-[11px] cursor-pointer"
+            className="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-white/[0.04] hover:bg-amber-500/15 border border-slate-200 dark:border-white/[0.08] hover:border-amber-500/30 text-slate-700 dark:text-slate-300 hover:text-amber-700 dark:hover:text-amber-300 transition text-[11px] cursor-pointer"
           >
             + Promise
           </button>
           <button
             onClick={() => insertTemplate('### 📖 Sermon & Study Notes')}
-            className="px-2 py-0.5 rounded-full bg-white/[0.04] hover:bg-amber-500/15 border border-white/[0.08] hover:border-amber-500/30 text-slate-300 hover:text-amber-300 transition text-[11px] cursor-pointer"
+            className="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-white/[0.04] hover:bg-amber-500/15 border border-slate-200 dark:border-white/[0.08] hover:border-amber-500/30 text-slate-700 dark:text-slate-300 hover:text-amber-700 dark:hover:text-amber-300 transition text-[11px] cursor-pointer"
           >
             + Study
           </button>
           <button
             onClick={() => insertTemplate('### 💡 Personal Application')}
-            className="px-2 py-0.5 rounded-full bg-white/[0.04] hover:bg-amber-500/15 border border-white/[0.08] hover:border-amber-500/30 text-slate-300 hover:text-amber-300 transition text-[11px] cursor-pointer"
+            className="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-white/[0.04] hover:bg-amber-500/15 border border-slate-200 dark:border-white/[0.08] hover:border-amber-500/30 text-slate-700 dark:text-slate-300 hover:text-amber-700 dark:hover:text-amber-300 transition text-[11px] cursor-pointer"
           >
-            + Life Application
+            + Application
           </button>
         </div>
       </div>
@@ -383,19 +383,19 @@ export function NoteEditor({
             onChange={(e) => onContentChange(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder={`Reflections, study notes, and insights for ${bookName} ${chapterNumber}...\n\n(Tip: Click "Quote in Notes" on any verse in the Bible panel to quote scripture citations, or click tags above)`}
-            className="flex-1 w-full p-4 bg-black/30 border border-white/[0.08] rounded-2xl text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500/60 focus:ring-1 focus:ring-amber-500/20 font-sans text-sm sm:text-base leading-relaxed resize-none transition"
+            className="flex-1 w-full p-4 bg-white dark:bg-black/30 border border-slate-300 dark:border-white/[0.08] rounded-2xl text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-amber-500/80 focus:ring-1 focus:ring-amber-500/30 font-nkjv text-base sm:text-lg leading-relaxed resize-none transition shadow-2xs"
           />
         ) : (
-          <div className="flex-1 overflow-y-auto p-4 bg-black/20 border border-white/[0.08] rounded-2xl">
+          <div className="flex-1 overflow-y-auto p-4 bg-white dark:bg-black/20 border border-slate-300 dark:border-white/[0.08] rounded-2xl shadow-2xs">
             {renderSimpleMarkdown(content)}
           </div>
         )}
       </div>
 
       {/* Editor Footer */}
-      <div className="px-4 sm:px-6 py-2 bg-card/60 border-t border-white/[0.08] flex items-center justify-between text-xs text-slate-400 flex-shrink-0">
+      <div className="px-4 sm:px-6 py-2 bg-[var(--card)]/90 border-t border-[var(--border)] flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 flex-shrink-0">
         <span className="flex items-center space-x-1.5">
-          <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+          <Sparkles className="w-3.5 h-3.5 text-amber-500" />
           <span className="text-[11px]">Auto-saved continuously</span>
         </span>
 

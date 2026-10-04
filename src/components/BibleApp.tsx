@@ -9,7 +9,7 @@ import {
   getAdjacentChapter,
 } from '@/lib/bible';
 import { useChapterNotes } from '@/hooks/useChapterNotes';
-import { Navbar, ReadingTheme } from '@/components/Navbar';
+import { Navbar } from '@/components/Navbar';
 import { BibleViewer } from '@/components/BibleViewer';
 import { NoteEditor } from '@/components/NoteEditor';
 import { BookChapterModal } from '@/components/BookChapterModal';
@@ -46,7 +46,7 @@ export function BibleApp({
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [viewMode, setViewMode] = useState<'split' | 'bible' | 'notes'>('split');
   const [fontSize, setFontSize] = useState<'sm' | 'md' | 'lg' | 'xl'>('md');
-  const [theme, setTheme] = useState<ReadingTheme>('obsidian');
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(true);
 
   // Load saved preferences from localStorage & apply theme
   useEffect(() => {
@@ -54,12 +54,13 @@ export function BibleApp({
       const savedFontSize = localStorage.getItem('scripture_notes_font_size') as 'sm' | 'md' | 'lg' | 'xl';
       if (savedFontSize) setFontSize(savedFontSize);
 
-      const savedTheme = localStorage.getItem('scripture_notes_theme') as ReadingTheme;
-      if (savedTheme) {
-        setTheme(savedTheme);
-        document.documentElement.setAttribute('data-theme', savedTheme);
+      const savedMode = localStorage.getItem('scripture_mode');
+      if (savedMode === 'light') {
+        setIsDarkMode(false);
+        document.documentElement.classList.remove('dark');
       } else {
-        document.documentElement.setAttribute('data-theme', 'obsidian');
+        setIsDarkMode(true);
+        document.documentElement.classList.add('dark');
       }
 
       // On mobile screens, default to 'bible' view instead of cramped split
@@ -69,12 +70,20 @@ export function BibleApp({
     }
   }, []);
 
-  const handleChangeTheme = (newTheme: ReadingTheme) => {
-    setTheme(newTheme);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('scripture_notes_theme', newTheme);
-      document.documentElement.setAttribute('data-theme', newTheme);
-    }
+  const handleToggleDarkMode = () => {
+    setIsDarkMode((prev) => {
+      const next = !prev;
+      if (typeof window !== 'undefined') {
+        if (next) {
+          document.documentElement.classList.add('dark');
+          localStorage.setItem('scripture_mode', 'dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+          localStorage.setItem('scripture_mode', 'light');
+        }
+      }
+      return next;
+    });
   };
 
   const handleChangeFontSize = (size: 'sm' | 'md' | 'lg' | 'xl') => {
@@ -217,8 +226,8 @@ export function BibleApp({
         onOpenAuthModal={() => setIsAuthModalOpen(true)}
         viewMode={viewMode}
         onChangeViewMode={setViewMode}
-        theme={theme}
-        onChangeTheme={handleChangeTheme}
+        isDarkMode={isDarkMode}
+        onToggleDarkMode={handleToggleDarkMode}
       />
 
       {/* Main Workspace Layout */}
@@ -269,11 +278,11 @@ export function BibleApp({
       </main>
 
       {/* Mobile Bottom Dock (visible on small mobile screens) */}
-      <nav className="sm:hidden flex items-center justify-around bg-card/90 backdrop-blur-xl border-t border-white/[0.08] py-2 px-3 z-20">
+      <nav className="sm:hidden flex items-center justify-around bg-[var(--card)]/90 backdrop-blur-xl border-t border-[var(--border)] py-2 px-3 z-20 transition-colors">
         <button
           onClick={() => setViewMode('bible')}
-          className={`flex flex-col items-center py-1 px-3 rounded-xl transition ${
-            viewMode === 'bible' ? 'text-amber-400 font-bold' : 'text-slate-400'
+          className={`flex flex-col items-center py-1 px-3 rounded-xl transition cursor-pointer ${
+            viewMode === 'bible' ? 'text-amber-600 dark:text-amber-400 font-bold' : 'text-slate-500 dark:text-slate-400'
           }`}
         >
           <Book className="w-5 h-5 mb-0.5" />
@@ -282,8 +291,8 @@ export function BibleApp({
 
         <button
           onClick={() => setViewMode('notes')}
-          className={`flex flex-col items-center py-1 px-3 rounded-xl transition ${
-            viewMode === 'notes' ? 'text-amber-400 font-bold' : 'text-slate-400'
+          className={`flex flex-col items-center py-1 px-3 rounded-xl transition cursor-pointer ${
+            viewMode === 'notes' ? 'text-amber-600 dark:text-amber-400 font-bold' : 'text-slate-500 dark:text-slate-400'
           }`}
         >
           <FileEdit className="w-5 h-5 mb-0.5" />
@@ -292,15 +301,15 @@ export function BibleApp({
 
         <button
           onClick={() => setIsBookPickerOpen(true)}
-          className="flex flex-col items-center py-1 px-3 rounded-xl text-slate-400 hover:text-white transition"
+          className="flex flex-col items-center py-1 px-3 rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition cursor-pointer"
         >
-          <Search className="w-5 h-5 mb-0.5 text-amber-400" />
+          <Search className="w-5 h-5 mb-0.5 text-amber-600 dark:text-amber-400" />
           <span className="text-[10px]">Books</span>
         </button>
 
         <button
           onClick={() => setIsNotesDrawerOpen(true)}
-          className="flex flex-col items-center py-1 px-3 rounded-xl text-slate-400 hover:text-white transition"
+          className="flex flex-col items-center py-1 px-3 rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition cursor-pointer"
         >
           <FolderArchive className="w-5 h-5 mb-0.5" />
           <span className="text-[10px]">Journal</span>
