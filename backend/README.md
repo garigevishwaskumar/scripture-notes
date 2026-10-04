@@ -11,7 +11,6 @@ Production-grade, asynchronous REST API for Bible study, full-text scripture sea
 * **Database ORM**: [SQLAlchemy](https://www.sqlalchemy.org/) with SQLite / PostgreSQL support
 * **In-Memory Scripture Engine**: Pre-indexed Bible dataset with 66 books and 31,102 verses
 * **Interactive Docs**: Swagger UI (`/docs`) and ReDoc (`/redoc`)
-* **Test Suite**: Automated test suite with `pytest` and `TestClient`
 
 ```
 backend/
@@ -31,8 +30,6 @@ backend/
 │   └── data/
 │       ├── bible-kjv.json  # Complete KJV Bible dataset
 │       └── bible-meta.json # Book metadata and chapter counts
-├── tests/
-│   └── test_api.py         # Automated test cases
 ├── requirements.txt        # Python package dependencies
 ├── run.py                  # Server runner script
 └── README.md
@@ -60,22 +57,6 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 * **Swagger UI (Interactive API Docs)**: `http://localhost:8000/docs`
 * **ReDoc Documentation**: `http://localhost:8000/redoc`
 * **Health Check**: `http://localhost:8000/healthz`
-
----
-
-## 🧪 Run Automated Tests
-
-```bash
-python -m pytest tests/test_api.py -v
-```
-
-All 6 test cases verify:
-1. Health and index integrity
-2. Complete listing of all 66 books
-3. Book metadata retrieval
-4. Verse retrieval (supporting both full names and standard 3-letter abbreviations)
-5. Full-text scripture search
-6. Full CRUD lifecycle of user notes and Markdown journal export
 
 ---
 
