@@ -7,15 +7,17 @@
     "dev": "npm --prefix frontend run dev",
     "dev:frontend": "npm --prefix frontend run dev",
     "dev:backend": "python backend/run.py",
-    "build": "cd frontend && npm install && npm run build && node -e \"const fs = require('fs'); fs.cpSync('.next', '../.next', {recursive: true}); fs.cpSync('public', '../public', {recursive: true});\"",
+    "build": "cd frontend && npm install --include=dev && npm run build && node -e \"const fs = require('fs'); fs.cpSync('.next', '../.next', {recursive: true}); fs.cpSync('public', '../public', {recursive: true});\"",
     "start": "cd frontend && npm run start"
   },
   "workspaces": [
     "frontend"
   ],
   "dependencies": {
+    "@tailwindcss/postcss": "^4",
     "next": "16.3.8",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "tailwindcss": "^4"
   }
 }
