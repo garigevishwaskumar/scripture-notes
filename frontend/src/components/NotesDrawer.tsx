@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { supabase, isSupabaseConfigured } from '@/lib/supabase';
+import { fetchAllNotesBackend } from '@/lib/backendApi';
 import { getBookMeta } from '@/lib/bible';
 import { X, BookOpen, Search, ChevronRight, FileText, Sparkles, RefreshCw, Download } from 'lucide-react';
 
@@ -24,7 +24,7 @@ export function NotesDrawer({
   onClose,
   onSelectChapter,
 }: NotesDrawerProps) {
-  const { user } = useAuth();
+  const { user, session } = useAuth();
   const [notes, setNotes] = useState<NoteSummary[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -33,26 +33,27 @@ export function NotesDrawer({
     setLoading(true);
     const loadedNotes: NoteSummary[] = [];
 
-    // 1. If user is signed in with Supabase
-    if (user && isSupabaseConfigured) {
-      try {
-        const { data, error } = await supabase
-          .from('bible_notes')
-          .select('book_id, chapter_number, content, updated_at')
-          .eq('user_id', user.id)
-          .order('updated_at', { ascending: false });
-
-        if (!error && data) {
-          data.forEach((item) => {
-            if (item.content && item.content.trim()) {
-              loadedNotes.push(item);
-            }
+    // 1. Fetch from FastAPI backend
+    try {
+      const backendNotes = await fetchAllNotesBackend(
+        session?.access_token,
+        undefined,
+        user?.id || 'guest'
+      );
+      backendNotes.forEach((item) => {
+        if (item.content && item.content.trim()) {
+          loadedNotes.push({
+            book_id: item.book_id,
+            chapter_number: item.chapter_number,
+            content: item.content,
+            updated_at: item.updated_at,
           });
         }
-      } catch (err) {
-        console.error('Error fetching all notes:', err);
-      }
+      });
+    } catch (err) {
+      console.error('Error fetching all notes from backend:', err);
     }
+
 
     // 2. Also check local storage notes
     if (typeof window !== 'undefined') {

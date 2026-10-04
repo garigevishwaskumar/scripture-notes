@@ -1,5 +1,6 @@
 /**
- * Client for Python FastAPI Backend Service
+ * Enterprise Client for Python FastAPI Backend Service
+ * Centralized REST API client for Scripture search, chapters, and Notes persistence.
  */
 
 const BACKEND_BASE_URL =
@@ -30,6 +31,36 @@ export interface BackendSearchResponse {
   results: BackendVerseResult[];
 }
 
+export interface BackendNoteRecord {
+  id: number;
+  user_id?: string;
+  book_id: string;
+  chapter_number: number;
+  content: string;
+  tags?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface BackendNotesListResponse {
+  total: number;
+  notes: BackendNoteRecord[];
+}
+
+/**
+ * Builds request headers including Bearer JWT token when provided.
+ */
+function buildHeaders(token?: string | null, additionalHeaders: Record<string, string> = {}): HeadersInit {
+  const headers: Record<string, string> = {
+    'Accept': 'application/json',
+    ...additionalHeaders,
+  };
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  return headers;
+}
+
 /**
  * Checks if the Python FastAPI backend is online and healthy.
  */
@@ -37,7 +68,7 @@ export async function checkBackendHealth(): Promise<BackendHealth | null> {
   try {
     const res = await fetch(`${BACKEND_BASE_URL}/healthz`, {
       method: 'GET',
-      headers: { 'Accept': 'application/json' },
+      headers: buildHeaders(),
       cache: 'no-store',
     });
     if (!res.ok) return null;
@@ -48,7 +79,7 @@ export async function checkBackendHealth(): Promise<BackendHealth | null> {
 }
 
 /**
- * Full-text search via FastAPI backend.
+ * Full-text search across all 31,102 verses via FastAPI backend.
  */
 export async function searchScriptureBackend(
   query: string,
@@ -63,7 +94,7 @@ export async function searchScriptureBackend(
     });
     const res = await fetch(`${BACKEND_BASE_URL}/api/bible/search?${params}`, {
       method: 'GET',
-      headers: { 'Accept': 'application/json' },
+      headers: buildHeaders(),
     });
     if (!res.ok) return null;
     return await res.json();
@@ -73,43 +104,144 @@ export async function searchScriptureBackend(
 }
 
 /**
- * Save note to Python FastAPI backend SQLite database.
+ * Fetch chapter note from FastAPI backend.
+ * Enforces authenticated Bearer token with optional guest fallback.
+ */
+export async function fetchNoteBackend(
+  bookId: string,
+  chapterNumber: number,
+  token?: string | null,
+  userId?: string
+): Promise<BackendNoteRecord | null> {
+  try {
+    const params = new URLSearchParams();
+    if (userId) params.set('user_id', userId);
+
+    const qs = params.toString() ? `?${params.toString()}` : '';
+    const res = await fetch(
+      `${BACKEND_BASE_URL}/api/notes/${encodeURIComponent(bookId)}/${chapterNumber}${qs}`,
+      {
+        method: 'GET',
+        headers: buildHeaders(token),
+        cache: 'no-store',
+      }
+    );
+    if (res.status === 404) return null;
+    if (!res.ok) {
+      console.warn(`Backend fetch note failed with status: ${res.status}`);
+      return null;
+    }
+    return await res.json();
+  } catch (err) {
+    console.error('Error fetching note from backend API:', err);
+    return null;
+  }
+}
+
+/**
+ * Upsert note to FastAPI backend (persisted into Supabase PostgreSQL).
  */
 export async function saveNoteBackend(
   bookId: string,
   chapterNumber: number,
   content: string,
   tags?: string,
-  userId: string = 'guest'
+  token?: string | null,
+  userId?: string
+): Promise<{ success: boolean; data?: BackendNoteRecord; error?: string }> {
+  try {
+    const res = await fetch(
+      `${BACKEND_BASE_URL}/api/notes/${encodeURIComponent(bookId)}/${chapterNumber}`,
+      {
+        method: 'POST',
+        headers: buildHeaders(token, { 'Content-Type': 'application/json' }),
+        body: JSON.stringify({ content, tags, user_id: userId }),
+      }
+    );
+    if (!res.ok) {
+      const errText = await res.text();
+      return { success: false, error: errText || `Failed with status ${res.status}` };
+    }
+    const data: BackendNoteRecord = await res.json();
+    return { success: true, data };
+  } catch (err) {
+    return { success: false, error: (err as Error).message || 'Network error saving note' };
+  }
+}
+
+/**
+ * Fetch all notes for the authenticated user from FastAPI backend.
+ */
+export async function fetchAllNotesBackend(
+  token?: string | null,
+  bookId?: string,
+  userId?: string
+): Promise<BackendNoteRecord[]> {
+  try {
+    const params = new URLSearchParams();
+    if (bookId) params.set('book_id', bookId);
+    if (userId) params.set('user_id', userId);
+
+    const qs = params.toString() ? `?${params.toString()}` : '';
+    const res = await fetch(`${BACKEND_BASE_URL}/api/notes${qs}`, {
+      method: 'GET',
+      headers: buildHeaders(token),
+      cache: 'no-store',
+    });
+    if (!res.ok) return [];
+    const data: BackendNotesListResponse = await res.json();
+    return data.notes || [];
+  } catch (err) {
+    console.error('Error fetching all notes from backend:', err);
+    return [];
+  }
+}
+
+/**
+ * Delete a chapter note via FastAPI backend.
+ */
+export async function deleteNoteBackend(
+  bookId: string,
+  chapterNumber: number,
+  token?: string | null,
+  userId?: string
 ): Promise<boolean> {
   try {
-    const res = await fetch(`${BACKEND_BASE_URL}/api/notes/${bookId}/${chapterNumber}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ content, tags, user_id: userId }),
-    });
-    return res.ok;
+    const params = new URLSearchParams();
+    if (userId) params.set('user_id', userId);
+
+    const qs = params.toString() ? `?${params.toString()}` : '';
+    const res = await fetch(
+      `${BACKEND_BASE_URL}/api/notes/${encodeURIComponent(bookId)}/${chapterNumber}${qs}`,
+      {
+        method: 'DELETE',
+        headers: buildHeaders(token),
+      }
+    );
+    return res.status === 204 || res.ok;
   } catch {
     return false;
   }
 }
 
 /**
- * Fetch chapter note from Python FastAPI backend.
+ * Export consolidated Markdown journal from FastAPI backend.
  */
-export async function fetchNoteBackend(
-  bookId: string,
-  chapterNumber: number,
-  userId: string = 'guest'
+export async function exportJournalMarkdownBackend(
+  token?: string | null,
+  userId?: string
 ): Promise<string | null> {
   try {
-    const res = await fetch(
-      `${BACKEND_BASE_URL}/api/notes/${bookId}/${chapterNumber}?user_id=${encodeURIComponent(userId)}`,
-      { method: 'GET', headers: { 'Accept': 'application/json' } }
-    );
+    const params = new URLSearchParams();
+    if (userId) params.set('user_id', userId);
+
+    const qs = params.toString() ? `?${params.toString()}` : '';
+    const res = await fetch(`${BACKEND_BASE_URL}/api/notes/export/markdown${qs}`, {
+      method: 'GET',
+      headers: buildHeaders(token, { 'Accept': 'text/markdown' }),
+    });
     if (!res.ok) return null;
-    const data = await res.json();
-    return data.content || '';
+    return await res.text();
   } catch {
     return null;
   }

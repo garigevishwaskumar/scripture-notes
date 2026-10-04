@@ -42,7 +42,8 @@ class SearchResponse(BaseModel):
 class NoteCreateRequest(BaseModel):
     content: str = Field(..., description="Markdown note text")
     tags: Optional[str] = Field(None, description="Comma-separated tags")
-    user_id: Optional[str] = Field("guest", description="User ID or 'guest'")
+    user_id: Optional[str] = Field(None, description="Optional override, defaults to authenticated user")
+
 
 class NoteResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)

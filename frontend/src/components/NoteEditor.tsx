@@ -231,11 +231,12 @@ export function NoteEditor({
           )}
 
           {syncStatus === 'saved' && (
-            <div className="flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-xs" title="Synced with Supabase Cloud">
+            <div className="flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-xs" title="Synced with Cloud Database via FastAPI">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-2xs shadow-emerald-400"></span>
               <span className="hidden sm:inline">Cloud Synced</span>
             </div>
           )}
+
 
           {syncStatus === 'local' && (
             <div className="flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-white/[0.06] border border-slate-200 dark:border-white/[0.1] text-slate-700 dark:text-slate-300 text-xs" title="Saved locally in browser">

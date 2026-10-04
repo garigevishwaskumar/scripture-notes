@@ -1,5 +1,5 @@
 """
-Bible Study Notes CRUD & Journal Router
+Bible Study Notes CRUD & Journal Router - Enterprise Standards
 """
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
@@ -8,19 +8,32 @@ from app.database import get_db
 from app.models import Note
 from app.schemas import NoteResponse, NoteCreateRequest, NotesListResponse
 from app.services.bible_service import bible_service
+from app.auth import get_optional_user, AuthenticatedUser
 
 router = APIRouter(prefix="/api/notes", tags=["Study Notes"])
 
+def resolve_user_id(auth_user: Optional[AuthenticatedUser], param_user_id: Optional[str] = None) -> str:
+    """
+    Enterprise user resolution:
+    If Bearer JWT token is present, the verified token's user identity is strictly used.
+    Otherwise, falls back to the requested user ID or guest identifier.
+    """
+    if auth_user:
+        return auth_user.id
+    return param_user_id or "guest"
+
 @router.get("", response_model=NotesListResponse, summary="List all study notes")
 def list_notes(
-    user_id: Optional[str] = Query("guest", description="User ID"),
     book_id: Optional[str] = Query(None, description="Optional book ID filter"),
+    user_id: Optional[str] = Query(None, description="Explicit user ID fallback"),
+    auth_user: Optional[AuthenticatedUser] = Depends(get_optional_user),
     db: Session = Depends(get_db)
 ):
     """
-    Returns all notes saved by the user, ordered by most recently updated.
+    Returns all notes saved by the authenticated user, ordered by most recently updated.
     """
-    query = db.query(Note).filter(Note.user_id == user_id)
+    effective_user_id = resolve_user_id(auth_user, user_id)
+    query = db.query(Note).filter(Note.user_id == effective_user_id)
     if book_id:
         meta = bible_service.get_book_meta(book_id)
         target = meta.id.lower() if meta else book_id.lower()
@@ -31,14 +44,16 @@ def list_notes(
 
 @router.get("/export/markdown", summary="Export all notes as Markdown study journal")
 def export_markdown_journal(
-    user_id: Optional[str] = Query("guest", description="User ID"),
+    user_id: Optional[str] = Query(None, description="Explicit user ID fallback"),
+    auth_user: Optional[AuthenticatedUser] = Depends(get_optional_user),
     db: Session = Depends(get_db)
 ):
     """
     Generates a consolidated Markdown file with all reflections, prayers, and study notes.
     """
+    effective_user_id = resolve_user_id(auth_user, user_id)
     notes = db.query(Note).filter(
-        Note.user_id == user_id,
+        Note.user_id == effective_user_id,
         Note.content != ""
     ).order_by(Note.book_id, Note.chapter_number).all()
 
@@ -65,17 +80,19 @@ def export_markdown_journal(
 def get_note(
     book_id: str,
     chapter_number: int,
-    user_id: Optional[str] = Query("guest", description="User ID"),
+    user_id: Optional[str] = Query(None, description="Explicit user ID fallback"),
+    auth_user: Optional[AuthenticatedUser] = Depends(get_optional_user),
     db: Session = Depends(get_db)
 ):
     """
     Retrieves note content for a specific Bible book and chapter.
     """
+    effective_user_id = resolve_user_id(auth_user, user_id)
     meta = bible_service.get_book_meta(book_id)
     target_book = meta.id.lower() if meta else book_id.lower()
 
     note = db.query(Note).filter(
-        Note.user_id == user_id,
+        Note.user_id == effective_user_id,
         Note.book_id == target_book,
         Note.chapter_number == chapter_number
     ).first()
@@ -92,17 +109,18 @@ def save_or_update_note(
     book_id: str,
     chapter_number: int,
     payload: NoteCreateRequest,
+    auth_user: Optional[AuthenticatedUser] = Depends(get_optional_user),
     db: Session = Depends(get_db)
 ):
     """
-    Upserts a chapter note for the specified user and passage.
+    Upserts a chapter note for the authenticated user and passage.
     """
+    effective_user_id = resolve_user_id(auth_user, payload.user_id)
     meta = bible_service.get_book_meta(book_id)
     target_book = meta.id.lower() if meta else book_id.lower()
-    user_id = payload.user_id or "guest"
 
     note = db.query(Note).filter(
-        Note.user_id == user_id,
+        Note.user_id == effective_user_id,
         Note.book_id == target_book,
         Note.chapter_number == chapter_number
     ).first()
@@ -112,7 +130,7 @@ def save_or_update_note(
         note.tags = payload.tags
     else:
         note = Note(
-            user_id=user_id,
+            user_id=effective_user_id,
             book_id=target_book,
             chapter_number=chapter_number,
             content=payload.content,
@@ -128,17 +146,19 @@ def save_or_update_note(
 def delete_note(
     book_id: str,
     chapter_number: int,
-    user_id: Optional[str] = Query("guest", description="User ID"),
+    user_id: Optional[str] = Query(None, description="Explicit user ID fallback"),
+    auth_user: Optional[AuthenticatedUser] = Depends(get_optional_user),
     db: Session = Depends(get_db)
 ):
     """
     Deletes the study note for the specified chapter.
     """
+    effective_user_id = resolve_user_id(auth_user, user_id)
     meta = bible_service.get_book_meta(book_id)
     target_book = meta.id.lower() if meta else book_id.lower()
 
     note = db.query(Note).filter(
-        Note.user_id == user_id,
+        Note.user_id == effective_user_id,
         Note.book_id == target_book,
         Note.chapter_number == chapter_number
     ).first()
@@ -152,3 +172,4 @@ def delete_note(
     db.delete(note)
     db.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
