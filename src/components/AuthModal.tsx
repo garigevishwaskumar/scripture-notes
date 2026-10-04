@@ -88,9 +88,12 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl animate-in fade-in duration-200"
+      onClick={onClose}
+    >
       <div
-        className="relative w-full max-w-md bg-[#0f172a] border border-slate-800 rounded-2xl shadow-2xl p-6 text-slate-100 overflow-hidden"
+        className="relative w-full max-w-md bg-[#0c101a] border border-white/[0.1] rounded-3xl shadow-2xl shadow-black/80 p-6 sm:p-7 text-slate-100 overflow-hidden ring-1 ring-white/10"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Glow Accent */}
@@ -99,7 +102,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition"
+          className="absolute top-4 right-4 p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.08] transition cursor-pointer"
           aria-label="Close dialog"
         >
           <X className="w-5 h-5" />
@@ -107,26 +110,26 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
 
         {/* Modal Header */}
         <div className="flex items-center space-x-3 mb-6">
-          <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+          <div className="w-11 h-11 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 shadow-md">
             <BookOpen className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-slate-100 tracking-tight">
+            <h3 className="text-lg sm:text-xl font-bold text-white font-display">
               {mode === 'signin' ? 'Sign In to ScriptureNotes' : mode === 'signup' ? 'Create Your Account' : 'Magic Link Sign In'}
             </h3>
-            <p className="text-xs text-slate-400">Private notes linked to every chapter of the Bible</p>
+            <p className="text-xs text-slate-400">Private personal notes synced with every chapter</p>
           </div>
         </div>
 
         {/* Supabase status warning if not configured yet */}
         {!isConfigured && (
-          <div className="mb-5 p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200">
+          <div className="mb-5 p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200">
             <div className="flex items-start space-x-2">
               <AlertCircle className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
               <div>
-                <span className="font-semibold text-amber-300">Supabase Setup Notice:</span>
+                <span className="font-semibold text-amber-300">Supabase Notice:</span>
                 <p className="mt-1 text-slate-300">
-                  Supabase credentials are not yet configured in <code className="text-amber-300 bg-slate-900/80 px-1 py-0.5 rounded">.env.local</code>.
+                  Supabase credentials are not configured in <code className="text-amber-300 bg-black/40 px-1 py-0.5 rounded">.env.local</code>.
                   Your notes will still save automatically to local browser storage so nothing is lost!
                 </p>
               </div>
@@ -135,14 +138,14 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
         )}
 
         {errorMsg && (
-          <div className="mb-4 p-3 rounded-lg bg-red-950/40 border border-red-800/50 text-red-200 text-xs flex items-center space-x-2">
+          <div className="mb-4 p-3 rounded-xl bg-red-950/40 border border-red-800/50 text-red-200 text-xs flex items-center space-x-2">
             <AlertCircle className="w-4 h-4 flex-shrink-0 text-red-400" />
             <span>{errorMsg}</span>
           </div>
         )}
 
         {successMsg && (
-          <div className="mb-4 p-3 rounded-lg bg-emerald-950/40 border border-emerald-800/50 text-emerald-200 text-xs flex items-center space-x-2">
+          <div className="mb-4 p-3 rounded-xl bg-emerald-950/40 border border-emerald-800/50 text-emerald-200 text-xs flex items-center space-x-2">
             <Check className="w-4 h-4 flex-shrink-0 text-emerald-400" />
             <span>{successMsg}</span>
           </div>
@@ -153,7 +156,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
           type="button"
           onClick={handleGoogleSignIn}
           disabled={loading}
-          className="w-full mb-4 py-2.5 px-4 rounded-xl bg-slate-800/90 hover:bg-slate-700/80 border border-slate-700 text-slate-200 font-medium text-sm flex items-center justify-center space-x-3 transition cursor-pointer disabled:opacity-50"
+          className="w-full mb-4 py-2.5 px-4 rounded-xl bg-white/[0.05] hover:bg-white/[0.09] border border-white/[0.1] text-slate-200 font-semibold text-sm flex items-center justify-center space-x-3 transition cursor-pointer disabled:opacity-50"
         >
           <svg className="w-4 h-4" viewBox="0 0 24 24">
             <path
@@ -177,17 +180,17 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
         </button>
 
         <div className="relative flex py-2 items-center mb-4">
-          <div className="flex-grow border-t border-slate-800"></div>
-          <span className="flex-shrink mx-3 text-xs text-slate-500 uppercase tracking-wider font-semibold">
+          <div className="flex-grow border-t border-white/[0.08]"></div>
+          <span className="flex-shrink mx-3 text-xs text-slate-500 uppercase tracking-wider font-semibold font-mono">
             Or with email
           </span>
-          <div className="flex-grow border-t border-slate-800"></div>
+          <div className="flex-grow border-t border-white/[0.08]"></div>
         </div>
 
         {/* Email Form */}
         <form onSubmit={handleSubmit} className="space-y-3.5">
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1">Email Address</label>
+            <label className="block text-xs font-semibold text-slate-300 mb-1">Email Address</label>
             <div className="relative">
               <input
                 type="email"
@@ -195,15 +198,15 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
                 required
-                className="w-full px-3.5 py-2 pl-9 bg-slate-900/90 border border-slate-750 focus:border-amber-500 rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none transition"
+                className="w-full px-3.5 py-2 pl-9 bg-white/[0.05] border border-white/[0.1] focus:border-amber-500 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none transition"
               />
-              <Mail className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
+              <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
             </div>
           </div>
 
           {mode !== 'magic' && (
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">Password</label>
+              <label className="block text-xs font-semibold text-slate-300 mb-1">Password</label>
               <div className="relative">
                 <input
                   type="password"
@@ -211,9 +214,9 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   required
-                  className="w-full px-3.5 py-2 pl-9 bg-slate-900/90 border border-slate-750 focus:border-amber-500 rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none transition"
+                  className="w-full px-3.5 py-2 pl-9 bg-white/[0.05] border border-white/[0.1] focus:border-amber-500 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none transition"
                 />
-                <Key className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
+                <Key className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
               </div>
             </div>
           )}
@@ -221,27 +224,27 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2.5 px-4 bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold rounded-xl text-sm transition cursor-pointer shadow-lg shadow-amber-500/20 disabled:opacity-50 mt-2"
+            className="w-full py-2.5 px-4 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold rounded-xl text-sm transition cursor-pointer shadow-lg shadow-amber-500/25 disabled:opacity-50 mt-2"
           >
             {loading ? 'Processing...' : mode === 'signin' ? 'Sign In' : mode === 'signup' ? 'Create Account' : 'Send Magic Link'}
           </button>
         </form>
 
         {/* Mode switch */}
-        <div className="mt-4 pt-3 border-t border-slate-800/80 flex flex-wrap items-center justify-between text-xs text-slate-400">
+        <div className="mt-4 pt-3 border-t border-white/[0.08] flex flex-wrap items-center justify-between text-xs text-slate-400">
           {mode === 'signin' ? (
             <>
               <button
                 type="button"
                 onClick={() => setMode('signup')}
-                className="text-amber-400 hover:underline"
+                className="text-amber-400 hover:underline cursor-pointer"
               >
                 Need an account? Sign Up
               </button>
               <button
                 type="button"
                 onClick={() => setMode('magic')}
-                className="text-slate-400 hover:text-slate-200 hover:underline"
+                className="text-slate-400 hover:text-white hover:underline cursor-pointer"
               >
                 Passwordless Magic Link
               </button>
@@ -250,7 +253,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
             <button
               type="button"
               onClick={() => setMode('signin')}
-              className="text-amber-400 hover:underline w-full text-center"
+              className="text-amber-400 hover:underline w-full text-center cursor-pointer"
             >
               Already have an account? Sign In
             </button>
@@ -258,14 +261,14 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
         </div>
 
         {/* Privacy & Data Security Notice */}
-        <div className="mt-4 p-3 rounded-xl bg-slate-900/80 border border-slate-800 text-[11px] text-slate-400 space-y-1.5">
+        <div className="mt-4 p-3 rounded-2xl bg-white/[0.02] border border-white/[0.06] text-[11px] text-slate-400 space-y-1.5">
           <div className="flex items-center space-x-1.5 text-amber-400 font-semibold text-xs">
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
             <span>How your data is protected</span>
           </div>
           <ul className="space-y-1 text-slate-400 leading-tight list-disc pl-3.5">
-            <li>Your email is strictly stored in your private Supabase database and will never be shared.</li>
-            <li>Your notes are encrypted with Row-Level Security: only you can view your notes.</li>
+            <li>Your account is securely authenticated through your private Supabase database.</li>
+            <li>Row-Level Security guarantees only you can access and read your personal notes.</li>
           </ul>
         </div>
 

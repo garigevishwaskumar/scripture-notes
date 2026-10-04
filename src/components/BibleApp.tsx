@@ -9,12 +9,13 @@ import {
   getAdjacentChapter,
 } from '@/lib/bible';
 import { useChapterNotes } from '@/hooks/useChapterNotes';
-import { Navbar } from '@/components/Navbar';
+import { Navbar, ReadingTheme } from '@/components/Navbar';
 import { BibleViewer } from '@/components/BibleViewer';
 import { NoteEditor } from '@/components/NoteEditor';
 import { BookChapterModal } from '@/components/BookChapterModal';
 import { NotesDrawer } from '@/components/NotesDrawer';
 import { AuthModal } from '@/components/AuthModal';
+import { Book, FileEdit, Columns, Search, FolderArchive } from 'lucide-react';
 
 interface BibleAppProps {
   initialBookId?: string;
@@ -45,19 +46,36 @@ export function BibleApp({
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [viewMode, setViewMode] = useState<'split' | 'bible' | 'notes'>('split');
   const [fontSize, setFontSize] = useState<'sm' | 'md' | 'lg' | 'xl'>('md');
+  const [theme, setTheme] = useState<ReadingTheme>('obsidian');
 
-  // Load saved font size preference from localStorage
+  // Load saved preferences from localStorage & apply theme
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const savedFontSize = localStorage.getItem('scripture_notes_font_size') as 'sm' | 'md' | 'lg' | 'xl';
       if (savedFontSize) setFontSize(savedFontSize);
 
-      // On small screens, default to 'bible' or 'notes' view instead of narrow split
+      const savedTheme = localStorage.getItem('scripture_notes_theme') as ReadingTheme;
+      if (savedTheme) {
+        setTheme(savedTheme);
+        document.documentElement.setAttribute('data-theme', savedTheme);
+      } else {
+        document.documentElement.setAttribute('data-theme', 'obsidian');
+      }
+
+      // On mobile screens, default to 'bible' view instead of cramped split
       if (window.innerWidth < 768) {
         setViewMode('bible');
       }
     }
   }, []);
+
+  const handleChangeTheme = (newTheme: ReadingTheme) => {
+    setTheme(newTheme);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('scripture_notes_theme', newTheme);
+      document.documentElement.setAttribute('data-theme', newTheme);
+    }
+  };
 
   const handleChangeFontSize = (size: 'sm' | 'md' | 'lg' | 'xl') => {
     setFontSize(size);
@@ -111,7 +129,6 @@ export function BibleApp({
       setCurrentBookId(targetBookId);
       setCurrentChapter(targetChapter);
 
-      // Smooth URL pushState
       const targetUrl = `/bible/${targetBookId}/${targetChapter}`;
       if (typeof window !== 'undefined' && window.location.pathname !== targetUrl) {
         window.history.pushState(null, '', targetUrl);
@@ -136,10 +153,16 @@ export function BibleApp({
     }
   }, [nextTarget, navigateToChapter]);
 
-  // Keyboard shortcut listeners (left / right arrow)
+  // Global Keyboard shortcuts: Arrow navigation & Cmd/Ctrl + K search
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Don't trigger if user is focused inside textarea or input
+      // Cmd/Ctrl + K opens search
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setIsBookPickerOpen((prev) => !prev);
+        return;
+      }
+
       const target = e.target as HTMLElement;
       if (
         target.tagName === 'INPUT' ||
@@ -173,14 +196,14 @@ export function BibleApp({
 
     updateNoteContent(newContent);
 
-    // If on mobile and currently in 'bible' mode, notify or switch view
+    // If on mobile and currently in 'bible' mode, switch to notes
     if (viewMode === 'bible' && typeof window !== 'undefined' && window.innerWidth < 768) {
       setViewMode('notes');
     }
   };
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-[#090d16]">
+    <div className="flex flex-col h-screen overflow-hidden bg-background transition-colors">
       {/* Top Navbar */}
       <Navbar
         currentBookName={currentBookMeta ? currentBookMeta.name : currentBookId}
@@ -194,10 +217,12 @@ export function BibleApp({
         onOpenAuthModal={() => setIsAuthModalOpen(true)}
         viewMode={viewMode}
         onChangeViewMode={setViewMode}
+        theme={theme}
+        onChangeTheme={handleChangeTheme}
       />
 
       {/* Main Workspace Layout */}
-      <main className="flex-1 flex overflow-hidden">
+      <main className="flex-1 flex overflow-hidden relative">
         {/* Left: Scripture Viewer */}
         {(viewMode === 'split' || viewMode === 'bible') && (
           <div
@@ -242,6 +267,45 @@ export function BibleApp({
           </div>
         )}
       </main>
+
+      {/* Mobile Bottom Dock (visible on small mobile screens) */}
+      <nav className="sm:hidden flex items-center justify-around bg-card/90 backdrop-blur-xl border-t border-white/[0.08] py-2 px-3 z-20">
+        <button
+          onClick={() => setViewMode('bible')}
+          className={`flex flex-col items-center py-1 px-3 rounded-xl transition ${
+            viewMode === 'bible' ? 'text-amber-400 font-bold' : 'text-slate-400'
+          }`}
+        >
+          <Book className="w-5 h-5 mb-0.5" />
+          <span className="text-[10px]">Scripture</span>
+        </button>
+
+        <button
+          onClick={() => setViewMode('notes')}
+          className={`flex flex-col items-center py-1 px-3 rounded-xl transition ${
+            viewMode === 'notes' ? 'text-amber-400 font-bold' : 'text-slate-400'
+          }`}
+        >
+          <FileEdit className="w-5 h-5 mb-0.5" />
+          <span className="text-[10px]">Notes</span>
+        </button>
+
+        <button
+          onClick={() => setIsBookPickerOpen(true)}
+          className="flex flex-col items-center py-1 px-3 rounded-xl text-slate-400 hover:text-white transition"
+        >
+          <Search className="w-5 h-5 mb-0.5 text-amber-400" />
+          <span className="text-[10px]">Books</span>
+        </button>
+
+        <button
+          onClick={() => setIsNotesDrawerOpen(true)}
+          className="flex flex-col items-center py-1 px-3 rounded-xl text-slate-400 hover:text-white transition"
+        >
+          <FolderArchive className="w-5 h-5 mb-0.5" />
+          <span className="text-[10px]">Journal</span>
+        </button>
+      </nav>
 
       {/* Modals & Drawers */}
       <BookChapterModal

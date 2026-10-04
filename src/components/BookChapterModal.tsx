@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { ALL_BOOKS, BibleBookMeta } from '@/lib/bible';
-import { X, Search, ChevronRight, BookOpen, Layers } from 'lucide-react';
+import { X, Search, ChevronRight, BookOpen, Layers, Sparkles } from 'lucide-react';
 
 interface BookChapterModalProps {
   isOpen: boolean;
@@ -25,6 +25,26 @@ export function BookChapterModal({
     return ALL_BOOKS.find((b) => b.id.toLowerCase() === currentBookId.toLowerCase()) || ALL_BOOKS[0];
   });
 
+  // Sync active book when opening
+  useEffect(() => {
+    if (isOpen) {
+      const match = ALL_BOOKS.find((b) => b.id.toLowerCase() === currentBookId.toLowerCase());
+      if (match) setActiveBook(match);
+      setSearchQuery('');
+    }
+  }, [isOpen, currentBookId]);
+
+  // Keyboard shortcut: Escape to close
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   const filteredBooks = useMemo(() => {
     return ALL_BOOKS.filter((book) => {
       const matchesSearch =
@@ -36,86 +56,102 @@ export function BookChapterModal({
     });
   }, [searchQuery, selectedTestament]);
 
+  // If search query changes and filteredBooks has items, automatically select first match
+  useEffect(() => {
+    if (searchQuery.trim() && filteredBooks.length > 0) {
+      setActiveBook(filteredBooks[0]);
+    }
+  }, [searchQuery, filteredBooks]);
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-xl animate-in fade-in duration-200"
+      onClick={onClose}
+    >
       <div
-        className="relative w-full max-w-3xl max-h-[85vh] bg-[#0f172a] border border-slate-800 rounded-2xl shadow-2xl flex flex-col text-slate-100 overflow-hidden"
+        className="relative w-full max-w-3xl max-h-[85vh] bg-[#0c101a] border border-white/[0.1] rounded-3xl shadow-2xl shadow-black/80 flex flex-col text-slate-100 overflow-hidden ring-1 ring-white/10"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Top Header */}
-        <div className="p-4 sm:p-5 border-b border-slate-800 flex items-center justify-between">
-          <div className="flex items-center space-x-2.5">
-            <BookOpen className="w-5 h-5 text-amber-500" />
-            <h3 className="text-lg font-semibold text-slate-100">Select Scripture Chapter</h3>
+        <div className="p-4 sm:p-6 border-b border-white/[0.08] flex items-center justify-between bg-card/40">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+              <BookOpen className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-white font-display">Scripture Library</h3>
+              <p className="text-xs text-slate-400">Choose any of the 66 Books of the King James Bible</p>
+            </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition"
+            className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.08] transition cursor-pointer"
+            title="Close (Esc)"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Filter & Search Bar */}
-        <div className="p-4 bg-slate-900/60 border-b border-slate-800/80 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
+        <div className="p-4 bg-black/30 border-b border-white/[0.08] flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
           <div className="relative flex-1">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
             <input
               type="text"
-              placeholder="Search books (e.g. John, Psalms, Romans)..."
+              placeholder="Search books (e.g. John, Psalms, Romans, Genesis)..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 bg-slate-800/90 border border-slate-700/80 rounded-xl text-sm text-slate-100 placeholder-slate-400 focus:outline-none focus:border-amber-500 transition"
+              className="w-full pl-10 pr-9 py-2 bg-white/[0.05] border border-white/[0.1] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500/20 transition"
               autoFocus
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-2.5 top-2 text-slate-400 hover:text-slate-200"
+                className="absolute right-3 top-2.5 text-slate-400 hover:text-white cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             )}
           </div>
 
-          <div className="flex items-center space-x-1 bg-slate-800/80 p-1 rounded-xl border border-slate-700/60 self-start sm:self-auto">
+          <div className="flex items-center space-x-1 bg-black/40 p-1 rounded-xl border border-white/[0.08] self-start sm:self-auto">
             <button
               onClick={() => setSelectedTestament('ALL')}
-              className={`px-3 py-1 text-xs font-medium rounded-lg transition ${
+              className={`px-3 py-1 text-xs font-semibold rounded-lg transition cursor-pointer ${
                 selectedTestament === 'ALL'
-                  ? 'bg-amber-500 text-slate-950 font-semibold'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-amber-500 text-slate-950 shadow-sm'
+                  : 'text-slate-400 hover:text-white'
               }`}
             >
               All (66)
             </button>
             <button
               onClick={() => setSelectedTestament('OT')}
-              className={`px-3 py-1 text-xs font-medium rounded-lg transition ${
+              className={`px-3 py-1 text-xs font-semibold rounded-lg transition cursor-pointer ${
                 selectedTestament === 'OT'
-                  ? 'bg-amber-500 text-slate-950 font-semibold'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-amber-500 text-slate-950 shadow-sm'
+                  : 'text-slate-400 hover:text-white'
               }`}
             >
-              Old Testament (39)
+              Old Test. (39)
             </button>
             <button
               onClick={() => setSelectedTestament('NT')}
-              className={`px-3 py-1 text-xs font-medium rounded-lg transition ${
+              className={`px-3 py-1 text-xs font-semibold rounded-lg transition cursor-pointer ${
                 selectedTestament === 'NT'
-                  ? 'bg-amber-500 text-slate-950 font-semibold'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-amber-500 text-slate-950 shadow-sm'
+                  : 'text-slate-400 hover:text-white'
               }`}
             >
-              New Testament (27)
+              New Test. (27)
             </button>
           </div>
         </div>
 
         {/* Content Area: Dual pane (Books on Left, Chapters on Right) */}
-        <div className="flex-1 min-h-[350px] overflow-hidden grid grid-cols-1 md:grid-cols-12 divide-y md:divide-y-0 md:divide-x divide-slate-800">
+        <div className="flex-1 min-h-[350px] overflow-hidden grid grid-cols-1 md:grid-cols-12 divide-y md:divide-y-0 md:divide-x divide-white/[0.08]">
           {/* Books List (col-span-5) */}
           <div className="md:col-span-5 overflow-y-auto max-h-[350px] md:max-h-[500px] p-2 space-y-1">
             {filteredBooks.length === 0 ? (
@@ -130,26 +166,26 @@ export function BookChapterModal({
                   <button
                     key={book.id}
                     onClick={() => setActiveBook(book)}
-                    className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-left text-sm transition ${
+                    className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-left text-sm transition cursor-pointer ${
                       isSelected
-                        ? 'bg-amber-500/15 border border-amber-500/30 text-amber-300 font-semibold'
-                        : 'text-slate-300 hover:bg-slate-800/70 hover:text-slate-100'
+                        ? 'bg-amber-500/15 border border-amber-500/30 text-amber-300 font-bold'
+                        : 'text-slate-300 hover:bg-white/[0.05] hover:text-white'
                     }`}
                   >
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-2.5">
                       <span
-                        className={`text-[10px] px-1.5 py-0.5 rounded font-mono font-medium ${
+                        className={`text-[10px] px-1.5 py-0.5 rounded font-mono font-bold ${
                           book.testament === 'OT'
-                            ? 'bg-blue-900/40 text-blue-300 border border-blue-800/40'
-                            : 'bg-emerald-900/40 text-emerald-300 border border-emerald-800/40'
+                            ? 'bg-blue-500/15 text-blue-300 border border-blue-500/25'
+                            : 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/25'
                         }`}
                       >
                         {book.testament}
                       </span>
                       <span>{book.name}</span>
                       {isCurrent && (
-                        <span className="text-[10px] bg-slate-800 px-1.5 py-0.5 rounded text-slate-400">
-                          Current
+                        <span className="text-[10px] bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded font-mono">
+                          Active
                         </span>
                       )}
                     </div>
@@ -164,17 +200,17 @@ export function BookChapterModal({
           </div>
 
           {/* Chapters Grid (col-span-7) */}
-          <div className="md:col-span-7 overflow-y-auto max-h-[350px] md:max-h-[500px] p-4 flex flex-col">
+          <div className="md:col-span-7 overflow-y-auto max-h-[350px] md:max-h-[500px] p-5 flex flex-col bg-black/10">
             {activeBook ? (
               <>
-                <div className="flex items-center justify-between mb-3 pb-2 border-b border-slate-800/60">
+                <div className="flex items-center justify-between mb-4 pb-3 border-b border-white/[0.08]">
                   <div className="flex items-center space-x-2">
                     <Layers className="w-4 h-4 text-amber-400" />
-                    <span className="text-sm font-semibold text-slate-200">
-                      {activeBook.name} Chapters ({activeBook.chapterCount})
+                    <span className="text-base font-bold text-white font-display">
+                      {activeBook.name} ({activeBook.chapterCount} Chapters)
                     </span>
                   </div>
-                  <span className="text-xs text-slate-500">
+                  <span className="text-xs text-slate-400 font-mono">
                     {activeBook.testament === 'OT' ? 'Old Testament' : 'New Testament'}
                   </span>
                 </div>
@@ -190,10 +226,10 @@ export function BookChapterModal({
                           onSelect(activeBook.id, chNum);
                           onClose();
                         }}
-                        className={`h-11 rounded-xl font-medium text-sm flex items-center justify-center transition border ${
+                        className={`h-11 rounded-xl font-semibold text-sm flex items-center justify-center transition border cursor-pointer ${
                           isSelectedChapter
                             ? 'bg-amber-500 border-amber-400 text-slate-950 font-bold shadow-lg shadow-amber-500/30'
-                            : 'bg-slate-800/70 border-slate-700/60 text-slate-200 hover:bg-slate-700 hover:border-amber-500/50 hover:text-amber-300'
+                            : 'bg-white/[0.04] border-white/[0.08] text-slate-200 hover:bg-white/[0.1] hover:border-amber-500/50 hover:text-amber-300'
                         }`}
                       >
                         {chNum}
@@ -211,13 +247,13 @@ export function BookChapterModal({
         </div>
 
         {/* Modal Footer */}
-        <div className="p-3 bg-slate-900/90 border-t border-slate-800 text-xs text-slate-400 flex items-center justify-between">
-          <span>Tip: You can use Left and Right arrow keys to flip chapters quickly</span>
+        <div className="p-3.5 bg-black/40 border-t border-white/[0.08] text-xs text-slate-400 flex items-center justify-between">
+          <span>Tip: Use <kbd className="bg-white/10 px-1 py-0.5 rounded font-mono text-[10px]">←</kbd> and <kbd className="bg-white/10 px-1 py-0.5 rounded font-mono text-[10px]">→</kbd> to quickly flip through chapters while reading</span>
           <button
             onClick={onClose}
-            className="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition"
+            className="px-3 py-1 bg-white/[0.06] hover:bg-white/[0.1] text-slate-300 rounded-lg transition cursor-pointer"
           >
-            Cancel
+            Close
           </button>
         </div>
       </div>
