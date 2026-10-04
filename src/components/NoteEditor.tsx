@@ -383,10 +383,10 @@ export function NoteEditor({
             onChange={(e) => onContentChange(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder={`Reflections, study notes, and insights for ${bookName} ${chapterNumber}...\n\n(Tip: Click "Quote in Notes" on any verse in the Bible panel to quote scripture citations, or click tags above)`}
-            className="flex-1 w-full p-4 bg-white dark:bg-black/30 border border-slate-300 dark:border-white/[0.08] rounded-2xl text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-amber-500/80 focus:ring-1 focus:ring-amber-500/30 font-nkjv text-base sm:text-lg leading-relaxed resize-none transition shadow-2xs"
+            className="flex-1 w-full p-4 sm:p-5 bg-[var(--note-bg)] border border-[var(--border)] rounded-2xl text-[var(--foreground)] placeholder-[var(--muted)] focus:outline-none focus:border-amber-500/80 focus:ring-1 focus:ring-amber-500/30 font-nkjv text-base sm:text-lg leading-relaxed resize-none transition shadow-2xs"
           />
         ) : (
-          <div className="flex-1 overflow-y-auto p-4 bg-white dark:bg-black/20 border border-slate-300 dark:border-white/[0.08] rounded-2xl shadow-2xs">
+          <div className="flex-1 overflow-y-auto p-4 sm:p-5 bg-[var(--note-bg)] border border-[var(--border)] rounded-2xl shadow-2xs text-[var(--foreground)]">
             {renderSimpleMarkdown(content)}
           </div>
         )}

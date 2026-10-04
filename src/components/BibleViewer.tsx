@@ -317,14 +317,14 @@ export function BibleViewer({
         ) : (
           <div className="max-w-3xl mx-auto">
             {/* Classical Bible Chapter Header */}
-            <div className="text-center py-6 mb-6 border-b border-slate-200 dark:border-white/[0.08]">
-              <span className="text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-widest font-sans">
+            <div className="text-center py-6 mb-6 border-b border-[var(--border)]">
+              <span className="text-xs font-semibold text-amber-600 dark:text-amber-400 uppercase tracking-widest font-sans">
                 The Holy Bible · King James Version
               </span>
-              <h1 className="text-3xl sm:text-4xl font-serif text-slate-900 dark:text-white font-normal mt-1 mb-2 tracking-wide">
+              <h1 className="text-3xl sm:text-4xl font-serif text-[var(--foreground)] font-normal mt-1 mb-2 tracking-wide font-nkjv">
                 {book?.name}
               </h1>
-              <div className="inline-block px-3 py-1 rounded-full bg-slate-100 dark:bg-white/[0.04] border border-slate-200 dark:border-white/[0.08] text-xs font-serif text-slate-700 dark:text-slate-300">
+              <div className="inline-block px-3 py-1 rounded-full bg-[var(--surface-alt)] border border-[var(--border)] text-xs font-serif text-[var(--foreground)]">
                 Chapter {chapterNumber}
               </div>
             </div>

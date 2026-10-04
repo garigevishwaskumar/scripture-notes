@@ -65,23 +65,23 @@ export function Navbar({
             <BookOpen className="w-4 h-4 sm:w-5 sm:h-5 text-white stroke-[2.2]" />
           </div>
           <div className="flex flex-col">
-            <span className="font-bold text-sm sm:text-base tracking-tight text-slate-900 dark:text-white leading-tight font-display">
-              Scripture<span className="text-amber-600 dark:text-amber-400">Notes</span>
+            <span className="font-bold text-sm sm:text-base tracking-tight text-[var(--foreground)] leading-tight font-display">
+              Scripture<span className="text-amber-500">Notes</span>
             </span>
-            <span className="text-[10px] text-slate-500 dark:text-slate-400 hidden sm:inline group-hover:text-amber-600 dark:group-hover:text-amber-300 transition font-medium">
+            <span className="text-[10px] text-[var(--muted)] hidden sm:inline group-hover:text-amber-500 transition font-medium">
               NKJV & Study Studio
             </span>
           </div>
         </button>
 
-        <div className="h-5 w-px bg-slate-300 dark:bg-white/10 hidden sm:block mx-1" />
+        <div className="h-5 w-px bg-[var(--border)] hidden sm:block mx-1" />
 
         {/* Chapter Jump Selector */}
         <div className="flex items-center space-x-1">
           <button
             onClick={onPrev}
             disabled={!hasPrev}
-            className="p-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/[0.08] disabled:opacity-25 disabled:pointer-events-none transition cursor-pointer"
+            className="p-1.5 rounded-lg text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--surface-alt)] disabled:opacity-25 disabled:pointer-events-none transition cursor-pointer"
             title="Previous chapter (← Left Arrow)"
           >
             <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -89,19 +89,19 @@ export function Navbar({
 
           <button
             onClick={onOpenBookPicker}
-            className="flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/[0.06] dark:hover:bg-white/[0.1] border border-slate-300 dark:border-white/[0.1] hover:border-amber-500/50 text-slate-900 dark:text-slate-100 font-semibold text-xs sm:text-sm transition group shadow-2xs cursor-pointer font-serif"
+            className="flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-[var(--surface-alt)] hover:bg-[var(--card)] border border-[var(--border)] hover:border-amber-500/50 text-[var(--foreground)] font-semibold text-xs sm:text-sm transition group shadow-2xs cursor-pointer font-serif"
             title="Click to jump to any book or chapter"
           >
             <span className="tracking-tight">
               {currentBookName} {currentChapter}
             </span>
-            <ChevronDown className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition" />
+            <ChevronDown className="w-3.5 h-3.5 text-[var(--muted)] group-hover:text-amber-500 transition" />
           </button>
 
           <button
             onClick={onNext}
             disabled={!hasNext}
-            className="p-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/[0.08] disabled:opacity-25 disabled:pointer-events-none transition cursor-pointer"
+            className="p-1.5 rounded-lg text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--surface-alt)] disabled:opacity-25 disabled:pointer-events-none transition cursor-pointer"
             title="Next chapter (→ Right Arrow)"
           >
             <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
